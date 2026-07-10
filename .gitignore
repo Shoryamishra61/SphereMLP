@@ -1,0 +1,25 @@
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Experiment outputs and release archives
+results/raw/*
+!results/raw/t00_*.txt
+!results/raw/t00_*.json
+results/summaries/*
+results/plots/*
+*.tar.gz
+
+# Local reference repositories and supplied research assets
+flopscope/
+whest-starterkit/
+implementation/
+*.pdf
+
+# Local agent state
+.agents/
+.codex/

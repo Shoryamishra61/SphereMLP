@@ -1,0 +1,31 @@
+{
+  "command": ".\\whest-starterkit\\.venv\\Scripts\\whest.exe run --estimator estimator.py --runner local --n-mlps 1 --n-samples 1000 --seed 0 --format json",
+  "exit_code": 0,
+  "schema_version": "1.1",
+  "whestbench_version": "0.12.0rc3",
+  "run_config": {
+    "n_mlps": 1,
+    "width": 256,
+    "depth": 32,
+    "seed": 0,
+    "flop_budget": 272000000000,
+    "wall_time_limit_s": 60.0
+  },
+  "results": {
+    "adjusted_final_layer_score": 0.03850624561309815,
+    "final_layer_mse": 0.38506245613098145,
+    "all_layers_mse": 0.5524620413780212,
+    "mean_score_multiplier": 0.1,
+    "mean_compute_utilization": 0.00003213234081426088,
+    "mean_effective_compute": 8739996.701478958,
+    "flops_used": 0,
+    "wall_time_s": 0.0004597003571689129,
+    "residual_wall_time_s": 0.00008739996701478958,
+    "n_failed_mlps": 0,
+    "budget_exhausted": false,
+    "time_exhausted": false,
+    "residual_wall_time_exhausted": false,
+    "combined_budget_exhausted": false
+  },
+  "note": "Focused T00 evidence record. The complete JSON was captured in the task execution transcript; this file retains all contract, score, compute, timing, and failure fields needed by the T00 gate."
+}

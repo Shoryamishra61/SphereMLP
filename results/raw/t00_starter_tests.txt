@@ -1,0 +1,14 @@
+Command (PowerShell):
+$env:PYTHONUTF8='1'; .\.venv\Scripts\python.exe -m pytest -q
+
+Working directory:
+whest-starterkit
+
+Result:
+13 passed, 4 failed in 93.26s.
+
+All four failures are tests/test_readme_commands.py cases that invoke `/bin/bash`.
+This Windows host has no WSL bash installation; each failed with:
+`execvpe(/bin/bash) failed: No such file or directory`.
+
+No Python unit or integration assertion outside those shell-fence portability tests failed.

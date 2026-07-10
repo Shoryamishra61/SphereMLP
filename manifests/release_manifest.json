@@ -1,0 +1,15 @@
+{
+  "git_commit": "",
+  "created_at_utc": "",
+  "python_version": "",
+  "packages": {},
+  "dataset_revision": "",
+  "config_hash": "",
+  "runtime_files": [],
+  "artifact_hashes": {},
+  "submission_sha256": "",
+  "validation_commands": [],
+  "benchmark_summary": {},
+  "failure_count": 0,
+  "fallback_count": 0
+}

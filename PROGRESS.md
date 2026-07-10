@@ -1,35 +1,34 @@
 # Current Phase
-T01 — Create Repository and Manifest Infrastructure
+T02 — Build a Trusted Small-Dimension Reference
 
 # Status
 COMPLETE
 
 # Changes
-- T00 contract checkpoint retained.
-- Initialized the root implementation repository and exclusions without altering supplied reference repositories.
-- Created the required runtime/development module layout and manifest templates.
-- Added immutable configuration plus canonical SHA-256 hashing and tests.
+- T00/T01 checkpoint retained at `0a623af`.
+- Added an intentionally slow development-only NumPy oracle for forward passes, Monte Carlo, scalar closure, and full covariance closure.
+- Added independent Gauss-Hermite integration for general bivariate ReLU moments.
 
 # Tests
-- Runtime import/manifest probe: 12 modules imported; all JSON and CSV manifests valid.
-- `pytest --collect-only -q`: 5 tests collected.
-- `pytest -q`: 5 passed.
-- `ruff check`: passed after mechanical import sorting.
-- Official validator: passed, `(2, 4)`, finite, 25 ms.
+- `pytest -q tests/test_reference_mc.py`: 6 passed in 12.40s.
+- First-layer mean versus 400k MC max error: 0.0003410864.
+- Arc-cosine versus order-160 quadrature max error: 0.0007471478.
+- General independent-pair identity error: 0.0001875935.
+- First-layer covariance versus 500k MC max matrix error: 0.0017945632.
+- Full suite: 11 passed; Ruff passed; official validator passed in 56 ms.
 
 # Metrics
-- T00 contract smoke remains the current frozen baseline; T01 makes no algorithmic change.
+- Runtime estimator remains unchanged; T02 reference code is excluded from packaging.
 
 # Acceptance Criteria
-- [x] Runtime and development modules import cleanly.
-- [x] Tests discover successfully.
-- [x] Required manifests and append-only ledger exist.
-- [x] Configuration hashing is deterministic and tested.
-- [x] Current estimator still passes the official validator.
+- [x] Analytical primitive errors meet recorded tolerances.
+- [x] Reference code remains small-dimension, slow, and auditable.
+- [x] All stochastic reference tests use fixed seeds.
+- [x] Runtime validator remains unchanged and passing.
 
 # Risks
-- The implementation repository starts from a new initial checkpoint; supplied nested repositories remain independent ignored references.
-- Runtime packaging must not introduce SciPy or other unavailable dependencies.
+- Gauss-Hermite convergence is algebraic around the ReLU kink; tolerances must be measured rather than guessed.
+- NumPy is development-only here; runtime paths continue to use flopscope primitives.
 
 # Next Task
-T02 — Build a Trusted Small-Dimension Reference
+T03 — Implement Mathematical Primitives

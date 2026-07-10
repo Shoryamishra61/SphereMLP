@@ -1,0 +1,23 @@
+{
+  "reference": "tests/reference_impl.py",
+  "test_command": "python -m pytest -q tests/test_reference_mc.py",
+  "focused_test_result": "6 passed in 12.40s",
+  "quadrature": {
+    "method": "tensor-product Gauss-Hermite",
+    "arc_cosine_check_order": 160,
+    "covariance_check_order": 128
+  },
+  "measured_max_absolute_errors": {
+    "first_layer_mean_vs_400000_sample_mc": 0.00034108637302998623,
+    "zero_mean_bivariate_vs_arc_cosine": 0.0007471477716646802,
+    "general_bivariate_independence_identity": 0.00018759345761245466,
+    "first_layer_covariance_mean_vs_500000_sample_mc": 0.0013269229588637743,
+    "first_layer_covariance_matrix_vs_500000_sample_mc": 0.0017945631690635122
+  },
+  "seeds": {
+    "first_layer_mean_mc": 20260711,
+    "optimized_scalar_fixture": 314159,
+    "first_layer_covariance_mc": 271828
+  },
+  "runtime_packaged": false
+}

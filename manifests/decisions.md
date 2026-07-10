@@ -31,3 +31,11 @@
 - Created runtime module boundaries and development entry points as import-safe placeholders only. No advanced estimator was implemented ahead of its dependency gate.
 - Folder packaging excludes development code, manifests, local references, research assets, and task documentation while retaining `estimator.py` and `whest_solution/`.
 - The host had no Git author identity. Checkpoints use repository-local `Codex <codex@local>` metadata; global Git configuration is unchanged.
+
+## T02 — Trusted small-dimension reference
+
+- SciPy is absent, so the trusted bivariate reference uses explicit tensor-product Gauss-Hermite numerical integration with independent standard-normal coordinates. It is development-only and excluded from packaging.
+- Reference propagation follows the proven `x @ w` convention, uses float64 NumPy, explicit pair loops, exact univariate Gaussian ReLU moments, and fixed RNG seeds.
+- Gauss-Hermite convergence around the ReLU kink is empirically characterized rather than called exact. At order 160 its maximum error against the zero-mean arc-cosine formula on the tested correlations is `7.4715e-4`.
+- The installed optimized mean-propagation baseline matches the independent scalar reference to `1e-10` absolute/relative tolerance on a fixed synthetic network.
+- First-layer reference covariance is checked against 500,000-sample Monte Carlo; maximum matrix error is `1.7946e-3`.

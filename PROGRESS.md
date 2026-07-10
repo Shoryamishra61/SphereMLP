@@ -1,34 +1,34 @@
 # Current Phase
-T02 — Build a Trusted Small-Dimension Reference
+T03 — Implement Mathematical Primitives
 
 # Status
 COMPLETE
 
 # Changes
-- T00/T01 checkpoint retained at `0a623af`.
-- Added an intentionally slow development-only NumPy oracle for forward passes, Monte Carlo, scalar closure, and full covariance closure.
-- Added independent Gauss-Hermite integration for general bivariate ReLU moments.
+- Trusted reference frozen at `0f98d8f`.
+- Added metered normal PDF/CDF, univariate ReLU moments, exact zero-mean pair moments, approximate general pair moments, correlation construction, and stable chi mean.
+- Added explicit deterministic and equal-variable boundary branches.
 
 # Tests
-- `pytest -q tests/test_reference_mc.py`: 6 passed in 12.40s.
-- First-layer mean versus 400k MC max error: 0.0003410864.
-- Arc-cosine versus order-160 quadrature max error: 0.0007471478.
-- General independent-pair identity error: 0.0001875935.
-- First-layer covariance versus 500k MC max matrix error: 0.0017945632.
-- Full suite: 11 passed; Ruff passed; official validator passed in 56 ms.
+- Focused moment suite: 7 passed after fixing one missing test import, one invalid expected constant, and the equal-variable limit.
+- Full suite: 18 passed in 6.41s.
+- Ruff: passed.
+- Official validator: passed in 62 ms.
+- Univariate maximum error: 0.0 on the differential fixture.
+- General bivariate maximum fixture error: 0.0009279188.
 
 # Metrics
-- Runtime estimator remains unchanged; T02 reference code is excluded from packaging.
+- Runtime estimator remains unchanged until the primitive gate passes.
 
 # Acceptance Criteria
-- [x] Analytical primitive errors meet recorded tolerances.
-- [x] Reference code remains small-dimension, slow, and auditable.
-- [x] All stochastic reference tests use fixed seeds.
-- [x] Runtime validator remains unchanged and passing.
+- [x] All fixtures return finite values.
+- [x] Variances remain non-negative within tolerance.
+- [x] Bivariate diagonal, swap symmetry, arc-cosine, and trusted-reference checks pass.
+- [x] Correlation and chi-mean primitives pass boundary checks.
+- [x] Official validator remains passing.
 
 # Risks
-- Gauss-Hermite convergence is algebraic around the ReLU kink; tolerances must be measured rather than guessed.
-- NumPy is development-only here; runtime paths continue to use flopscope primitives.
+- A general bivariate-normal CDF may require a documented approximation if flopscope has no supported primitive.
 
 # Next Task
-T03 — Implement Mathematical Primitives
+T04 — Implement Scalar Propagation Fallback

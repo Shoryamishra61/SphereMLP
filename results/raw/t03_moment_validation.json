@@ -1,0 +1,22 @@
+{
+  "implementation": "whest_solution/moments.py",
+  "full_suite": "18 passed in 6.41s",
+  "lint": "passed",
+  "validator": "passed in 62 ms",
+  "backend": {
+    "univariate_pdf_cdf": "flopscope.stats.norm",
+    "zero_mean_bivariate": "closed-form arc-cosine kernel",
+    "general_bivariate_cdf": "24-point Gauss-Legendre approximation of Plackett identity",
+    "chi_mean": "stable scalar log-gamma"
+  },
+  "measured_max_absolute_errors": {
+    "univariate_mean_second_variance": 0.0,
+    "general_bivariate_vs_order_200_independent_gauss_hermite": 0.0009279188127329085
+  },
+  "general_bivariate_fixture_errors": [
+    0.0003859575179354785,
+    0.0009279188127329085,
+    0.0001073691406105505
+  ],
+  "failure_count": 0
+}

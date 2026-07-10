@@ -39,3 +39,12 @@
 - Gauss-Hermite convergence around the ReLU kink is empirically characterized rather than called exact. At order 160 its maximum error against the zero-mean arc-cosine formula on the tested correlations is `7.4715e-4`.
 - The installed optimized mean-propagation baseline matches the independent scalar reference to `1e-10` absolute/relative tolerance on a fixed synthetic network.
 - First-layer reference covariance is checked against 500,000-sample Monte Carlo; maximum matrix error is `1.7946e-3`.
+
+## T03 — Metered mathematical primitives
+
+- flopscope 0.8.0rc5 provides metered univariate normal PDF/CDF but no bivariate or multivariate CDF.
+- The runtime general bivariate CDF is explicitly approximate: 24-point fixed Gauss-Legendre integration of Plackett's identity, implemented entirely with supported flopscope primitives. It must be compute-profiled before full-covariance retention.
+- The zero-mean bivariate moment remains the closed-form arc-cosine expression and supports exact `rho=-1,0,1` limits.
+- The general pair primitive uses explicit near-deterministic branches, an exact equal-variable diagonal branch, interior correlation clipping, symmetry, and non-negativity guarding.
+- Runtime univariate primitives match the independent float64 reference exactly on the tested values; general bivariate maximum error against the independent order-200 Gauss-Hermite fixtures is `9.2792e-4`.
+- Chi mean uses scalar `math.lgamma` in log space. Its residual-time cost is negligible but will still enter effective-compute profiling when spherical sampling is evaluated.

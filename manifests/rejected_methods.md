@@ -13,3 +13,27 @@ Methods are appended only after paired compute-adjusted evidence is available.
 
 - Evidence: 150/150 frozen Full validation calls failed output validation in `results/raw/t06_validation.csv`.
 - Decision: do not ship or use as a parent beyond this audit. The project exact-first-layer scalar remains the safe scalar baseline.
+
+## T08 — Spherical sampling N=49,152, batch_size=512
+
+- Evidence: Mini local run (100 MLPs), first 2 MLPs immediately busted budget.
+  - MLP 0: C_m=515,276,365,680 > B=272,000,000,000 (189% effective compute).
+  - MLP 1: C_m=457,112,351,665 > B=272,000,000,000 (168% effective compute).
+- Root cause: runner IPC + flopscope overhead inflates effective compute to ~2.5× analytical.
+  At N=49,152 (wall ~10s), residual charge ≈ 3.1s × 1e11 ≈ 307B extra FLOPs per MLP.
+- Decision: rejected as default; reduced to N=17,408 which yields 67.5% effective ratio.
+
+## T08 — Spherical sampling N=17,408, batch_size=256 (batch size 256)
+
+- Evidence: Mini local run (100 MLPs), mean compute ratio 13.4%, adjusted score 1.98e-06.
+- Rejection: batch_size=256 incurred higher residual overhead than batch_size=512.
+- Decision: superseded by batch_size=512 which reduces overhead; not a correctness failure.
+
+## T09 — Antithetic pairs at N=17,408, batch_size=512
+
+- Evidence: 5 trials each, IID vs antithetic.
+  - IID mean standard error: 0.00190842
+  - Antithetic mean standard error: 0.00190924  (virtually identical, slightly *worse*)
+- Root cause: deep ReLU nonlinearities destroy the U/−U correlation within 2-3 layers.
+  After sufficient depth, the antithetic pair is no more correlated than two IID samples.
+- Decision: rejected. `antithetic=False` (IID) remains the selection.

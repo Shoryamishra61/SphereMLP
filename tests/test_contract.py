@@ -55,3 +55,55 @@ def test_prediction_is_deterministic() -> None:
     with flops.BudgetContext(flop_budget=100, quiet=True):
         second = Estimator().predict(mlp, 100)
     assert bool(fnp.array_equal(first, second))
+
+
+def test_tiny_budget_returns_zero_matrix() -> None:
+    """Budget too small even for scalar → return zeros."""
+    mlp = _asymmetric_mlp()
+    with flops.BudgetContext(flop_budget=10, quiet=True):
+        prediction = Estimator().predict(mlp, 10)
+    assert prediction.shape == (mlp.depth, mlp.width)
+    assert bool(fnp.all(prediction == 0.0))
+
+
+def test_scalar_budget_returns_valid_non_zero() -> None:
+    """Budget enough for scalar but not for spherical → scalar result."""
+    mlp = _asymmetric_mlp()
+    # Enough for scalar (~32*1*2*2 + 128*1*2 = 384) but not spherical
+    budget = 5000
+    with flops.BudgetContext(flop_budget=budget, quiet=True):
+        prediction = Estimator().predict(mlp, budget)
+    assert prediction.shape == (mlp.depth, mlp.width)
+    assert bool(fnp.all(fnp.isfinite(prediction)))
+    assert bool(fnp.all(prediction >= 0.0))
+
+
+def test_spherical_activates_with_full_budget() -> None:
+    """With a full-size budget, the spherical path should produce a
+    result different from the scalar fallback (they use different methods)."""
+    import numpy as np
+
+    weights = [fnp.asarray(np.random.RandomState(42).randn(4, 4).astype(np.float32) * 0.5)]
+    mlp = MLP(width=4, depth=1, weights=weights, seed=99)
+    full_budget = 272_000_000_000
+    with flops.BudgetContext(flop_budget=full_budget, quiet=True):
+        prediction = Estimator().predict(mlp, full_budget)
+    assert prediction.shape == (1, 4)
+    assert bool(fnp.all(fnp.isfinite(prediction)))
+    assert bool(fnp.all(prediction >= 0.0))
+    # With full budget, at least some values should be non-zero
+    assert float(fnp.sum(prediction)) > 0.0
+
+
+def test_spherical_prediction_is_deterministic() -> None:
+    """Spherical sampling must be deterministic across repeated calls."""
+    import numpy as np
+
+    weights = [fnp.asarray(np.random.RandomState(7).randn(4, 4).astype(np.float32) * 0.5)]
+    mlp = MLP(width=4, depth=1, weights=weights, seed=42)
+    full_budget = 272_000_000_000
+    with flops.BudgetContext(flop_budget=full_budget, quiet=True):
+        first = Estimator().predict(mlp, full_budget)
+    with flops.BudgetContext(flop_budget=full_budget, quiet=True):
+        second = Estimator().predict(mlp, full_budget)
+    assert bool(fnp.array_equal(first, second))

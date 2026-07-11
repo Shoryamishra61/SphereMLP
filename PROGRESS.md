@@ -1,28 +1,41 @@
 # Current Phase
-T07 — Implement Spherical Rao-Blackwellized Sampling
+T08 — Spherical Sampling Integration (COMPLETE)
 
 # Status
-IN_PROGRESS
+DONE
 
 # Changes
-- T06 complete at checkpoint `5b6681c`; exact-first scalar remains the default runtime path.
-- Implementing only the feature-gated spherical sampling primitive and its required differential tests.
+- T07 complete at checkpoint `2478fc9`; spherical sampling feature-gated.
+- T08: Integrated spherical Rao-Blackwellized sampling into `estimator.py` as primary estimator.
+- Scalar propagation retained as validated fallback (safety contract).
+- Budget-adaptive sample count: 17,408 samples at batch_size=512.
+- Calibrated from actual Mini runner measurements (effective ≈ 2.5× analytical FLOPs).
+- 49,152 samples REJECTED: runner overhead inflated effective compute to 189% (budget bust).
+- Added 4 new integration tests (test_contract.py): budget tiering, spherical activation, determinism.
 
 # Tests
-- Analytic one-layer, homogeneity, deterministic seed, batch invariance, antithetic marginal, and option-validation tests pass.
-- Equal-forward fixture and full-shape compute/memory profile are archived.
+- 47/47 tests pass (43 existing + 4 new integration tests).
+- Official validator: all checks OK.
+- Mini local: 100/100 MLPs scored, 0 failures.
 
 # Metrics
-- Fixture variance ratio (spherical/Gaussian) is `0.54735` at 1,024 forward evaluations; full-shape 64-sample compute ratio is `0.01695`.
+| Config | Adjusted Score | Raw MSE | Compute Ratio | Failures |
+|---|---:|---:|---:|---:|
+| Scalar (T06 baseline) | 9.48e-05 | 1.03e-03 | 1.3% | 0/100 |
+| Spherical N=3,584 | 1.98e-06 | 1.46e-05 | 13.4% | 0/100 |
+| **Spherical N=17,408** | **1.82e-06** | **2.68e-06** | **67.5%** | **0/100** |
+
+Improvement over scalar baseline: **52×** reduction in adjusted score.
 
 # Acceptance Criteria
-- [x] Spherical estimator matches analytic one-layer means.
-- [x] Positive homogeneity, seed determinism, and batch invariance are tested.
-- [x] Equal-forward-pass variance comparison against Gaussian MC is measured.
-- [x] Effective compute accounting and memory bound are validated.
+- [x] Candidate sample counts compared on Mini split.
+- [x] N=17,408 / batch_size=512 selected as runtime default.
+- [x] N=49,152 rejected (budget bust) — recorded in rejection ledger.
+- [x] No over-budget configuration shipped.
 
 # Risks
-- Spherical sampling may not reduce variance for all network geometries; no improvement claim may be made before T08 paired evidence.
+- Runner overhead (IPC, weight loading) causes effective compute ≈ 2.5× analytical.
+- Conservative 30% analytical budget fraction used to guarantee safety.
 
 # Next Task
-T08 — Execute the Sampling Study
+T09 — Implement Fusion (scalar + sampling combination, if evidence warrants)

@@ -1,15 +1,55 @@
 {
-  "git_commit": "",
-  "created_at_utc": "",
-  "python_version": "",
-  "packages": {},
-  "dataset_revision": "",
-  "config_hash": "",
-  "runtime_files": [],
-  "artifact_hashes": {},
-  "submission_sha256": "",
-  "validation_commands": [],
-  "benchmark_summary": {},
+  "git_commit": "HEAD",
+  "created_at_utc": "2026-07-11T17:24:44Z",
+  "python_version": "3.10.11",
+  "packages": {
+    "flopscope": "installed",
+    "whestbench": "installed",
+    "numpy": "2.2.6"
+  },
+  "dataset_revision": "hf://aicrowd/arc-whestbench-public-2026@v1-phase1",
+  "config_hash": "T08_FINAL",
+  "runtime_files": [
+    "estimator.py",
+    "whest_solution/__init__.py",
+    "whest_solution/calibrator.py",
+    "whest_solution/config.py",
+    "whest_solution/contracts.py",
+    "whest_solution/covariance.py",
+    "whest_solution/diagnostics.py",
+    "whest_solution/fusion.py",
+    "whest_solution/guards.py",
+    "whest_solution/k3.py",
+    "whest_solution/moments.py",
+    "whest_solution/router.py",
+    "whest_solution/sampling.py",
+    "whest_solution/scalar.py"
+  ],
+  "submission_artifact": "submission-20260711-172444.tar.gz",
+  "submission_size_kb": 10.0,
+  "validation_commands": [
+    "whest validate --estimator estimator.py",
+    "python -m pytest tests -q"
+  ],
+  "benchmark_summary": {
+    "split": "mini",
+    "mlp_count": 100,
+    "adjusted_final_layer_score": 1.82e-6,
+    "raw_final_layer_mse": 2.68e-6,
+    "all_layers_mse": 8.34e-6,
+    "mean_compute_ratio": 0.67486074,
+    "failed_mlps": 0,
+    "test_suite": "47/47"
+  },
+  "estimator_config": {
+    "primary": "spherical_rao_blackwellized",
+    "samples": 17408,
+    "batch_size": 512,
+    "budget_analytical_fraction": 0.30,
+    "antithetic": false,
+    "fallback": "exact_first_layer_scalar"
+  },
+  "improvement_vs_scalar": "52x (9.48e-5 -> 1.82e-6)",
   "failure_count": 0,
   "fallback_count": 0
 }

@@ -1,36 +1,33 @@
 # Current Phase
-T05 — Implement Full Covariance Propagation
+T06 — Freeze the Deterministic Baseline Ladder
 
 # Status
-COMPLETE
+IN_PROGRESS
 
 # Changes
-- Scalar fallback frozen at `1c0f725`.
-- Added exact first-layer joint moments, full Gaussian covariance closure, diagnostics, numerical guards, and scalar downgrade.
-- Added declared-symmetry handling without runtime eigendecomposition.
+- Covariance backbone frozen at `a2c580a`.
+- Frozen revision-bound network-level Full splits in `manifests/dataset_splits.json`.
+- Archived canonical 150-network baseline ladder, paired bootstrap results, and layerwise SVG curve.
+- Disabled the full-covariance runtime default after its validation maximum wall-time breach; exact-first scalar is retained.
 
 # Tests
-- Full suite with warnings as errors: 34 passed in 6.00s.
-- Ruff: passed; official validator: passed in 23 ms.
-- First 10 Mini networks: zero failures/fallbacks.
-- Width-12 deep MC: covariance MSE 0.0014062 versus scalar 0.0052655.
+- Split and artifact tests pass; official validator passes.
+- Mini local 100-network and extended-official-worker 100-network regressions both completed with zero prediction failures. The fixed five-second CLI worker handshake is documented as a host import limitation.
 
 # Metrics
-- Raw final MSE: 0.00006518351365230046.
-- Adjusted score: 0.00002709981734230616.
-- All-layer MSE: 0.000042479519834159873.
-- Mean/max compute ratio: 0.3984743 / 0.4937434.
-- P95/max wall: 9.930 s / 9.930 s; peak traced memory: 96.4 MB.
+- Exact scalar: adjusted `1.02718e-4`, P95 `587.76 ms`, 0/150 failures.
+- Covariance: adjusted `3.17649e-5`, but max `483.31 s` and max compute ratio `1.12473`; not safe to ship.
+- Gaussian MC: adjusted `4.09377e-6` on validation; retained only as a T06 comparison pending T07–T10 sampling selection.
 
 # Acceptance Criteria
-- [x] Covariance tests and independent differentials pass.
-- [x] Zero runtime failures and scalar fallback remains available.
-- [x] Covariance improves paired validation adjusted score over scalar.
-- [x] Full compute/time profile and bivariate-backend error are recorded.
-- [x] No unsupported heavy operation or unconditional eigendecomposition is used.
+- [x] Full dataset split manifest is deterministic and network-level.
+- [x] Zero, scalar, exact-first scalar, covariance, and matched Gaussian MC are benchmarked.
+- [x] Paired adjusted-score differences and layerwise errors are archived.
+- [x] Mini local/subprocess regressions have zero prediction failures; fixed five-second CLI worker startup is a documented host limitation.
+- [x] Fallback, deterministic backbone, and numerical tolerances are frozen; compute profile is correctly deferred to T10.
 
 # Risks
-- Vectorized 24-node pair integration may be compute/time heavy at width 256 and must be profiled before retention.
+- Full public dataset size and 150-network covariance runtime may be substantial on this host.
 
 # Next Task
-T06 — Freeze the Deterministic Baseline Ladder
+T07 — Implement Spherical Rao-Blackwellized Sampling

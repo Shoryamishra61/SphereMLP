@@ -1,0 +1,18 @@
+{
+  "parent": "exact_scalar",
+  "candidate": "gaussian_mc",
+  "paired_mlp_count": 150,
+  "convention": "candidate_minus_parent; negative favors candidate",
+  "mean_paired_adjusted_score_delta": -9.862449941258556e-05,
+  "bootstrap_95_ci": [
+    -0.00011123552672280956,
+    -8.688089380402894e-05
+  ],
+  "median_adjusted_score_delta": -7.594913904580662e-05,
+  "candidate_win_fraction": 1.0,
+  "mean_raw_final_mse_delta": -0.0009862449941258555,
+  "mean_compute_ratio_delta": 0.024396787508906646,
+  "mean_wall_ms_delta": -23.048859999204677,
+  "candidate_failures": 0,
+  "parent_failures": 0
+}

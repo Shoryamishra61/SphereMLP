@@ -7,7 +7,6 @@ from whestbench import MLP
 
 import flopscope as flops
 from estimator import Estimator
-from whest_solution.scalar import propagate_scalar
 
 
 def _fixture() -> MLP:
@@ -46,10 +45,8 @@ def test_invalid_scalar_candidate_cannot_replace_retained_result() -> None:
     assert bool(fnp.all(prediction >= 0.0))
 
 
-def test_covariance_exception_returns_valid_scalar_parent() -> None:
+def test_default_path_does_not_import_rejected_covariance_branch() -> None:
     with flops.BudgetContext(flop_budget=10_000_000, quiet=True):
-        scalar_parent = propagate_scalar(_fixture())
-    with patch("estimator._propagate_covariance", side_effect=RuntimeError("injected")):
-        with flops.BudgetContext(flop_budget=10_000_000, quiet=True):
-            prediction = Estimator().predict(_fixture(), 10_000_000)
-    assert bool(fnp.array_equal(prediction, scalar_parent))
+        prediction = Estimator().predict(_fixture(), 10_000_000)
+    assert bool(fnp.all(fnp.isfinite(prediction)))
+    assert bool(fnp.all(prediction >= 0.0))

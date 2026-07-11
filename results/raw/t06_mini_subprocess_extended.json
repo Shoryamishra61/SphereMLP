@@ -1,0 +1,9 @@
+{
+  "runner": "official SubprocessRunner",
+  "setup_timeout_seconds": 15.0,
+  "predict_timeout_seconds": 30.0,
+  "mlp_count": 100,
+  "failure_count": 0,
+  "failures": [],
+  "mean_analytical_flops": 12427710.0
+}

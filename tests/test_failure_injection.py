@@ -7,17 +7,25 @@ from whestbench import MLP
 
 import flopscope as flops
 from estimator import Estimator
+from whest_solution.scalar import propagate_scalar
 
 
 def _fixture() -> MLP:
-    return MLP(width=2, depth=1, weights=[fnp.eye(2)], seed=1)
+    return MLP(
+        width=2,
+        depth=1,
+        weights=[fnp.array([[1.0, 0.2], [-0.3, 0.7]])],
+        seed=1,
+    )
 
 
 def test_low_budget_returns_free_valid_emergency_result() -> None:
+    mlp = _fixture()
     with flops.BudgetContext(flop_budget=100, quiet=True) as context:
-        prediction = Estimator().predict(_fixture(), 100)
+        prediction = Estimator().predict(mlp, 100)
     assert prediction.shape == (1, 2)
-    assert bool(fnp.all(prediction == 0.0))
+    assert bool(fnp.all(fnp.isfinite(prediction)))
+    assert bool(fnp.all(prediction >= 0.0))
     assert context.flops_used == 0
 
 
@@ -25,7 +33,8 @@ def test_scalar_exception_cannot_escape_or_replace_retained_result() -> None:
     with patch("estimator._propagate_scalar", side_effect=RuntimeError("injected")):
         with flops.BudgetContext(flop_budget=1_000_000, quiet=True):
             prediction = Estimator().predict(_fixture(), 1_000_000)
-    assert bool(fnp.all(prediction == 0.0))
+    assert bool(fnp.all(fnp.isfinite(prediction)))
+    assert bool(fnp.all(prediction >= 0.0))
 
 
 def test_invalid_scalar_candidate_cannot_replace_retained_result() -> None:
@@ -33,4 +42,14 @@ def test_invalid_scalar_candidate_cannot_replace_retained_result() -> None:
     with patch("estimator._propagate_scalar", return_value=invalid):
         with flops.BudgetContext(flop_budget=1_000_000, quiet=True):
             prediction = Estimator().predict(_fixture(), 1_000_000)
-    assert bool(fnp.all(prediction == 0.0))
+    assert bool(fnp.all(fnp.isfinite(prediction)))
+    assert bool(fnp.all(prediction >= 0.0))
+
+
+def test_covariance_exception_returns_valid_scalar_parent() -> None:
+    with flops.BudgetContext(flop_budget=10_000_000, quiet=True):
+        scalar_parent = propagate_scalar(_fixture())
+    with patch("estimator._propagate_covariance", side_effect=RuntimeError("injected")):
+        with flops.BudgetContext(flop_budget=10_000_000, quiet=True):
+            prediction = Estimator().predict(_fixture(), 10_000_000)
+    assert bool(fnp.array_equal(prediction, scalar_parent))

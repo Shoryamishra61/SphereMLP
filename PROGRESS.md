@@ -1,37 +1,36 @@
 # Current Phase
-T04 — Implement Scalar Propagation Fallback
+T05 — Implement Full Covariance Propagation
 
 # Status
 COMPLETE
 
 # Changes
-- Moment primitives frozen at `7362bfd`.
-- Added exact-first-layer scalar propagation, finite-state downgrade, output guard, budget preflight, and retained emergency result.
-- Lazy-loaded runtime modules to satisfy the official subprocess setup cap on this Windows host.
+- Scalar fallback frozen at `1c0f725`.
+- Added exact first-layer joint moments, full Gaussian covariance closure, diagnostics, numerical guards, and scalar downgrade.
+- Added declared-symmetry handling without runtime eigendecomposition.
 
 # Tests
-- Full suite: 26 passed in 5.91s; Ruff passed.
-- Official validator: passed in 45 ms.
-- Official Mini local: 100/100, zero failures, zero fallbacks.
-- Official Mini subprocess with `--max-threads 1`: 100/100, zero failures.
-- Scalar local P95: 526.0004 ms; max: 918.1094 ms; mean FLOPs: 12,427,710.
+- Full suite with warnings as errors: 34 passed in 6.00s.
+- Ruff: passed; official validator: passed in 23 ms.
+- First 10 Mini networks: zero failures/fallbacks.
+- Width-12 deep MC: covariance MSE 0.0014062 versus scalar 0.0052655.
 
 # Metrics
-- Raw final MSE: 0.0009482214922900312.
-- Adjusted score: 0.00009482214922900313.
-- All-layer MSE: 0.000815381417341996.
-- Mean compute ratio: 0.012301507566875909 local; 0.01190949 subprocess.
-- Peak traced memory: 2.0216 MB on a 32x256 synthetic profile.
+- Raw final MSE: 0.00006518351365230046.
+- Adjusted score: 0.00002709981734230616.
+- All-layer MSE: 0.000042479519834159873.
+- Mean/max compute ratio: 0.3984743 / 0.4937434.
+- P95/max wall: 9.930 s / 9.930 s; peak traced memory: 96.4 MB.
 
 # Acceptance Criteria
-- [x] Official validator passes.
-- [x] Mini local and subprocess have zero failures.
-- [x] Scalar runtime is below one second locally.
-- [x] Compute use and score are recorded.
-- [x] Valid scalar fallback is always retained before optional work.
+- [x] Covariance tests and independent differentials pass.
+- [x] Zero runtime failures and scalar fallback remains available.
+- [x] Covariance improves paired validation adjusted score over scalar.
+- [x] Full compute/time profile and bivariate-backend error are recorded.
+- [x] No unsupported heavy operation or unconditional eigendecomposition is used.
 
 # Risks
-- Cold Windows subprocess startup is close to the official five-second setup cap; retain lazy imports and one-thread subprocess checks.
+- Vectorized 24-node pair integration may be compute/time heavy at width 256 and must be profiled before retention.
 
 # Next Task
-T05 — Implement Full Covariance Propagation
+T06 — Freeze the Deterministic Baseline Ladder

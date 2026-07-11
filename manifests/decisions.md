@@ -60,3 +60,13 @@
 - Local JSON profiling measured mean analytical FLOPs `12,427,710`, P95 estimator wall `526.0004 ms`, max `918.1094 ms`, and zero failures.
 - Runner caveat: `whest run --runner subprocess --estimator .` treats the directory as a module file and fails. Runtime testing uses `--estimator estimator.py`; folder mode remains reserved for `whest package`.
 - Host caveat: cold worker imports varied around the fixed 5-second cap. Failed setup attempts are environment/runner startup failures before estimator setup; the final warmed one-thread 100-network subprocess run passed.
+
+## T05 — Full-covariance Gaussian backbone
+
+- The first joint layer uses the exact zero-mean arc-cosine moment with `W.T @ W` under the proven input-by-output orientation.
+- Later layers use full linear covariance propagation and the T03 approximate nonzero-mean bivariate backend. Covariance is explicitly symmetrized, exact marginal diagonals are restored, and significant negative diagonal or non-finite state raises a safe downgrade.
+- No runtime eigendecomposition or PSD projection is used. Eigenspectra appear only in small development tests.
+- Flopscope symmetry warnings are suppressed only for intentional diagnostic reductions and quadrature broadcasting whose numerical symmetry is subsequently restored and declared.
+- On the first 10 Mini networks, covariance reduces paired raw final MSE from `9.320093100541271e-4` to `6.518351365230046e-5` and adjusted score from `9.320093100541271e-5` to `2.709981734230616e-5`. It is retained for T06.
+- Mean analytical FLOPs are `3,744,274,276`; measured mean compute ratio is `0.39847`, P95 estimator wall is `9.930 s`, and peak traced memory is `96.4 MB`.
+- A width-12, depth-3 fixed-seed MC fixture shows covariance MSE `0.0014062` versus scalar `0.0052655`, while max absolute covariance error `0.1331` records the expected narrow finite-width closure limitation.

@@ -201,14 +201,18 @@ def bivariate_relu_second_moment(
 
 
 def pairwise_correlation(covariance: fnp.ndarray, *, sigma_epsilon: float = 1e-12) -> fnp.ndarray:
-    variance = fnp.maximum(fnp.diag(covariance), 0.0)
+    symmetric_covariance = flops.as_symmetric(0.5 * (covariance + covariance.T), symmetry=(0, 1))
+    variance = fnp.maximum(fnp.diag(symmetric_covariance), 0.0)
     sigma = fnp.sqrt(variance)
-    denominator = fnp.outer(sigma, sigma)
+    denominator = flops.as_symmetric(fnp.outer(sigma, sigma), symmetry=(0, 1))
     safe_denominator = fnp.where(denominator > sigma_epsilon, denominator, 1.0)
-    correlation = fnp.where(denominator > sigma_epsilon, covariance / safe_denominator, 0.0)
+    safe_denominator = flops.as_symmetric(safe_denominator, symmetry=(0, 1))
+    correlation = fnp.where(
+        denominator > sigma_epsilon, symmetric_covariance / safe_denominator, 0.0
+    )
     correlation = fnp.clip(correlation, -1.0, 1.0)
     fnp.fill_diagonal(correlation, fnp.where(variance > sigma_epsilon**2, 1.0, 0.0))
-    return correlation
+    return flops.as_symmetric(0.5 * (correlation + correlation.T), symmetry=(0, 1))
 
 
 def chi_mean(dimension: int) -> float:

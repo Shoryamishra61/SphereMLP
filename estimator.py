@@ -26,6 +26,16 @@ def _valid_prediction(candidate: object, *, depth: int, width: int) -> bool:
     return valid_prediction(candidate, depth=depth, width=width)
 
 
+def _covariance_budget_reserve(*, width: int, depth: int) -> int:
+    return int(8_000 * depth * width * width)
+
+
+def _propagate_covariance(mlp: MLP) -> fnp.ndarray:
+    from whest_solution.covariance import propagate_covariance
+
+    return propagate_covariance(mlp).predictions
+
+
 class Estimator(BaseEstimator):
     """Return a finite, non-negative result satisfying the official contract."""
 
@@ -40,5 +50,13 @@ class Estimator(BaseEstimator):
         except Exception:
             # The free retained result is intentionally immune to optional
             # numerical or accounting failures. T15 expands failure telemetry.
+            pass
+        if budget < _covariance_budget_reserve(width=mlp.width, depth=mlp.depth):
+            return retained
+        try:
+            candidate = _propagate_covariance(mlp)
+            if _valid_prediction(candidate, depth=mlp.depth, width=mlp.width):
+                retained = candidate
+        except Exception:
             pass
         return retained

@@ -1,0 +1,97 @@
+{
+  "dataset": "hf://aicrowd/arc-whestbench-public-2026@v1-phase1",
+  "split": "first 10 networks of Mini",
+  "mlp_count": 10,
+  "scalar_parent": {
+    "raw_final_mse": 0.0009320093100541271,
+    "adjusted_score": 0.00009320093100541271,
+    "all_layer_mse": 0.000785627873847261,
+    "mean_compute_ratio": 0.003267650079058745,
+    "failure_count": 0
+  },
+  "covariance": {
+    "raw_final_mse": 0.00006518351365230046,
+    "median_final_mse": 0.000040362199797527865,
+    "p90_final_mse": 0.00007883204671088606,
+    "p95_final_mse": 0.0002727296086959541,
+    "adjusted_score": 0.00002709981734230616,
+    "all_layer_mse": 0.000042479519834159873,
+    "mean_analytical_flops": 3744274276.0,
+    "mean_compute_ratio": 0.39847427830397436,
+    "max_compute_ratio": 0.49374335996953345,
+    "mean_wall_ms": 6440.415660012513,
+    "p95_wall_ms": 9929.958899971098,
+    "max_wall_ms": 9929.958899971098,
+    "mean_residual_wall_seconds": 0.8934954387135804,
+    "peak_traced_memory_mb": 96.39606952667236,
+    "failure_count": 0,
+    "fallback_count": 0
+  },
+  "paired_aggregate_delta_after_minus_parent": {
+    "raw_final_mse": -0.0008668257964018266,
+    "adjusted_score": -0.00006610111366310655,
+    "all_layer_mse": -0.0007431483540131011,
+    "mean_compute_ratio": 0.3952066282249156
+  },
+  "per_layer_mse": [
+    6.527236529052516e-10,
+    2.3892675926617812e-6,
+    7.457521860487759e-6,
+    1.290079399041133e-5,
+    1.8596609152154997e-5,
+    2.4295164621435106e-5,
+    2.8954280423931777e-5,
+    3.100929461652413e-5,
+    3.3238356991205364e-5,
+    3.587584069464356e-5,
+    3.9380418456858024e-5,
+    4.227400859235786e-5,
+    4.7450153942918405e-5,
+    4.913647353532724e-5,
+    4.842853013542481e-5,
+    4.981399979442358e-5,
+    4.877649917034432e-5,
+    5.054881330579519e-5,
+    5.541239079320803e-5,
+    5.272514681564644e-5,
+    5.0760427257046103e-5,
+    5.272381895338185e-5,
+    4.890937270829454e-5,
+    5.046437581768259e-5,
+    5.2862415031995624e-5,
+    5.768662231275812e-5,
+    5.491646152222529e-5,
+    5.6693610531510785e-5,
+    6.244269025046378e-5,
+    6.319745443761349e-5,
+    6.483968172688037e-5,
+    6.518351437989622e-5
+  ],
+  "bivariate_backend": {
+    "method": "24-point Gauss-Legendre Plackett integration",
+    "max_fixture_absolute_error": 0.0009279188127329085
+  },
+  "small_width_mc_characterization": {
+    "width": 12,
+    "depth": 3,
+    "samples": 200000,
+    "covariance_mse": 0.0014061919440724636,
+    "scalar_mse": 0.005265465786901891,
+    "covariance_max_absolute_error": 0.13313760787457163
+  },
+  "full_shape_profile": {
+    "wall_seconds_one_thread": 12.000325599685311,
+    "analytical_flops": 3744274276,
+    "peak_traced_memory_mb": 96.39606952667236,
+    "last_layer_diagnostics": {
+      "trace": 8.285079756994495,
+      "mean_variance": 0.03236359280075975,
+      "minimum_diagonal_variance": 0.0,
+      "maximum_absolute_correlation": 1.0,
+      "mean_absolute_off_diagonal_correlation": 0.10318188674873784,
+      "frobenius_norm": 4.276779609122575,
+      "symmetry_error": 0.0,
+      "negative_diagonal_count": 0
+    }
+  }
+}

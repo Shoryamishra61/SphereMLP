@@ -48,3 +48,15 @@
 - The general pair primitive uses explicit near-deterministic branches, an exact equal-variable diagonal branch, interior correlation clipping, symmetry, and non-negativity guarding.
 - Runtime univariate primitives match the independent float64 reference exactly on the tested values; general bivariate maximum error against the independent order-200 Gauss-Hermite fixtures is `9.2792e-4`.
 - Chi mean uses scalar `math.lgamma` in log space. Its residual-time cost is negligible but will still enter effective-compute profiling when spherical sampling is evaluated.
+
+## T04 — Scalar fallback
+
+- The first layer is implemented directly from input-by-output column norms, making its marginal means exact. Later layers use the diagonal Gaussian closure.
+- The top-level estimator retains a free float32 zero matrix before attempting scalar propagation. Tiny budgets below a conservative reserve return it without entering a counted operation; this preserves the official validator's budget-100 probe.
+- Scalar and guard modules are lazy-imported inside `predict`. This reduced Windows subprocess startup enough to pass the fixed five-second setup cap when combined with `--max-threads 1`.
+- Mini local and subprocess both completed 100/100 networks with zero failures and zero scalar fallbacks.
+- Official Mini scalar raw final MSE is `9.482214922900312e-4`; adjusted score is `9.482214922900313e-5`; all-layer MSE is `8.15381417341996e-4`.
+- The paired zero parent has raw final MSE `0.909290142506361` and adjusted score `0.09092901425063608`. Scalar is retained.
+- Local JSON profiling measured mean analytical FLOPs `12,427,710`, P95 estimator wall `526.0004 ms`, max `918.1094 ms`, and zero failures.
+- Runner caveat: `whest run --runner subprocess --estimator .` treats the directory as a module file and fails. Runtime testing uses `--estimator estimator.py`; folder mode remains reserved for `whest package`.
+- Host caveat: cold worker imports varied around the fixed 5-second cap. Failed setup attempts are environment/runner startup failures before estimator setup; the final warmed one-thread 100-network subprocess run passed.

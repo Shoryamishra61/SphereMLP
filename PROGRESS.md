@@ -1,34 +1,37 @@
 # Current Phase
-T03 — Implement Mathematical Primitives
+T04 — Implement Scalar Propagation Fallback
 
 # Status
 COMPLETE
 
 # Changes
-- Trusted reference frozen at `0f98d8f`.
-- Added metered normal PDF/CDF, univariate ReLU moments, exact zero-mean pair moments, approximate general pair moments, correlation construction, and stable chi mean.
-- Added explicit deterministic and equal-variable boundary branches.
+- Moment primitives frozen at `7362bfd`.
+- Added exact-first-layer scalar propagation, finite-state downgrade, output guard, budget preflight, and retained emergency result.
+- Lazy-loaded runtime modules to satisfy the official subprocess setup cap on this Windows host.
 
 # Tests
-- Focused moment suite: 7 passed after fixing one missing test import, one invalid expected constant, and the equal-variable limit.
-- Full suite: 18 passed in 6.41s.
-- Ruff: passed.
-- Official validator: passed in 62 ms.
-- Univariate maximum error: 0.0 on the differential fixture.
-- General bivariate maximum fixture error: 0.0009279188.
+- Full suite: 26 passed in 5.91s; Ruff passed.
+- Official validator: passed in 45 ms.
+- Official Mini local: 100/100, zero failures, zero fallbacks.
+- Official Mini subprocess with `--max-threads 1`: 100/100, zero failures.
+- Scalar local P95: 526.0004 ms; max: 918.1094 ms; mean FLOPs: 12,427,710.
 
 # Metrics
-- Runtime estimator remains unchanged until the primitive gate passes.
+- Raw final MSE: 0.0009482214922900312.
+- Adjusted score: 0.00009482214922900313.
+- All-layer MSE: 0.000815381417341996.
+- Mean compute ratio: 0.012301507566875909 local; 0.01190949 subprocess.
+- Peak traced memory: 2.0216 MB on a 32x256 synthetic profile.
 
 # Acceptance Criteria
-- [x] All fixtures return finite values.
-- [x] Variances remain non-negative within tolerance.
-- [x] Bivariate diagonal, swap symmetry, arc-cosine, and trusted-reference checks pass.
-- [x] Correlation and chi-mean primitives pass boundary checks.
-- [x] Official validator remains passing.
+- [x] Official validator passes.
+- [x] Mini local and subprocess have zero failures.
+- [x] Scalar runtime is below one second locally.
+- [x] Compute use and score are recorded.
+- [x] Valid scalar fallback is always retained before optional work.
 
 # Risks
-- A general bivariate-normal CDF may require a documented approximation if flopscope has no supported primitive.
+- Cold Windows subprocess startup is close to the official five-second setup cap; retain lazy imports and one-thread subprocess checks.
 
 # Next Task
-T04 — Implement Scalar Propagation Fallback
+T05 — Implement Full Covariance Propagation

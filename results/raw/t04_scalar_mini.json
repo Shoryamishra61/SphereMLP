@@ -1,0 +1,91 @@
+{
+  "dataset": "hf://aicrowd/arc-whestbench-public-2026@v1-phase1",
+  "split": "mini",
+  "mlp_count": 100,
+  "parent": {
+    "estimator": "official zero baseline",
+    "runner": "local",
+    "raw_final_mse": 0.909290142506361,
+    "adjusted_score": 0.09092901425063608,
+    "all_layer_mse": 0.8190983012318611,
+    "mean_compute_ratio": 0.000007530128213522191,
+    "failure_count": 0
+  },
+  "scalar_local": {
+    "raw_final_mse": 0.0009482214922900312,
+    "median_final_mse": 0.000740299466997385,
+    "p90_final_mse": 0.001662314753048122,
+    "p95_final_mse": 0.0020368117839097977,
+    "adjusted_score": 0.00009482214922900313,
+    "all_layer_mse": 0.000815381417341996,
+    "mean_flops": 12427710.0,
+    "mean_effective_compute": 3346010058.190249,
+    "mean_compute_ratio": 0.012301507566875909,
+    "max_compute_ratio": 0.050149775658034086,
+    "mean_wall_ms": 254.92575401440263,
+    "p95_wall_ms": 526.0004000738263,
+    "max_wall_ms": 918.1093997322023,
+    "peak_traced_memory_mb_synthetic_profile": 2.021561622619629,
+    "failure_count": 0,
+    "fallback_count": 0
+  },
+  "scalar_subprocess": {
+    "status": "passed",
+    "mlp_count": 100,
+    "raw_final_mse": 0.0009482214922900312,
+    "adjusted_score": 0.00009482214922900313,
+    "all_layer_mse": 0.000815381417341996,
+    "mean_compute_ratio": 0.01190949,
+    "failure_count": 0,
+    "max_threads": 1,
+    "run_duration_s": 658.518466
+  },
+  "paired_aggregate_delta_after_minus_parent": {
+    "raw_final_mse": -0.908341921014071,
+    "adjusted_score": -0.09083419210140708,
+    "all_layer_mse": -0.8182829198145191
+  },
+  "per_layer_mse": [
+    6.832416299396016e-10,
+    0.00016443684580735862,
+    0.0002964624436572194,
+    0.0004201203992124647,
+    0.0005390081205405295,
+    0.0006572707206942141,
+    0.0007387876394204795,
+    0.0007959330687299371,
+    0.0008275372674688697,
+    0.0008726578089408576,
+    0.0009036098490469158,
+    0.0009170525008812547,
+    0.0009416897082701325,
+    0.0009381371783092618,
+    0.0009435803513042629,
+    0.0009566607186570764,
+    0.0009610585984773934,
+    0.0009596438612788916,
+    0.0009614260634407401,
+    0.0009535271092317998,
+    0.0009754208731465042,
+    0.0009741588728502393,
+    0.0009668304119259119,
+    0.000959476747084409,
+    0.0009371742489747703,
+    0.0009250191505998373,
+    0.0009355146321468055,
+    0.0009219591156579554,
+    0.0009331500623375177,
+    0.0009198859916068614,
+    0.0009467923082411289,
+    0.0009482211899012327
+  ],
+  "commands": {
+    "local": "whest run --estimator estimator.py --dataset hf://aicrowd/arc-whestbench-public-2026@v1-phase1 --split mini --runner local",
+    "subprocess": "whest run --estimator estimator.py --dataset hf://aicrowd/arc-whestbench-public-2026@v1-phase1 --split mini --runner subprocess --max-threads 1"
+  },
+  "operational_notes": [
+    "Folder path --estimator . is unsupported by whest run subprocess although folder mode is supported by whest package.",
+    "Cold Windows worker imports sometimes exceed the fixed 5 second setup cap.",
+    "Lazy estimator imports and one-thread BLAS enabled the successful 100-network subprocess run."
+  ]
+}

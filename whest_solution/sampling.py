@@ -1,1 +1,85 @@
-"""Spherical sampling estimators (implemented in T07)."""
+"""Batched spherical Rao-Blackwellized sampling for bias-free ReLU MLPs."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+import flopscope.numpy as fnp
+from whestbench import MLP
+
+from .contracts import estimator_seed
+from .moments import chi_mean
+
+
+@dataclass(frozen=True)
+class SphericalEstimate:
+    """All-layer directional estimate and independent-sample standard errors."""
+
+    predictions: fnp.ndarray
+    standard_error: fnp.ndarray
+    samples: int
+
+
+def _validate_options(*, samples: int, batch_size: int, antithetic: bool) -> None:
+    if samples <= 1:
+        raise ValueError("samples must exceed one to estimate uncertainty")
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive")
+    if antithetic and samples % 2:
+        raise ValueError("antithetic sampling requires an even total sample count")
+    if antithetic and batch_size % 2:
+        raise ValueError("antithetic sampling requires an even batch_size")
+
+
+def spherical_propagation(
+    mlp: MLP,
+    *,
+    samples: int,
+    batch_size: int,
+    antithetic: bool = False,
+    seed: int | None = None,
+) -> SphericalEstimate:
+    """Estimate all ReLU-layer means by integrating the Gaussian radius exactly.
+
+    For a zero-bias ReLU network ``h`` and ``X = R U`` with ``U`` uniform on
+    the unit sphere, positive homogeneity gives ``E[h(X)] = E[R] E[h(U)]``.
+    Only a batch of directions and ``O(depth * width)`` accumulators is kept.
+    """
+    _validate_options(samples=samples, batch_size=batch_size, antithetic=antithetic)
+    rng = fnp.random.default_rng(estimator_seed(mlp) if seed is None else int(seed))
+    radial_mean = chi_mean(int(mlp.width))
+    totals = [fnp.zeros((mlp.width,), dtype=fnp.float64) for _ in range(mlp.depth)]
+    squared_totals = [fnp.zeros((mlp.width,), dtype=fnp.float64) for _ in range(mlp.depth)]
+    completed = 0
+    while completed < samples:
+        count = min(batch_size, samples - completed)
+        if antithetic:
+            # ``samples`` is the number of full forward evaluations, including
+            # the negative directions.
+            base_count = count // 2
+            directions = fnp.asarray(
+                rng.standard_normal((base_count, mlp.width), dtype=fnp.float32)
+            )
+            directions = fnp.concatenate((directions, -directions), axis=0)
+        else:
+            directions = fnp.asarray(rng.standard_normal((count, mlp.width), dtype=fnp.float32))
+        norms = fnp.sqrt(fnp.sum(directions * directions, axis=1, keepdims=True))
+        safe_norms = fnp.where(norms > 0.0, norms, 1.0)
+        activations = directions / safe_norms
+        for layer, weight in enumerate(mlp.weights):
+            activations = fnp.maximum(activations @ weight, 0.0)
+            scaled = activations * radial_mean
+            totals[layer] = totals[layer] + fnp.sum(scaled, axis=0)
+            squared_totals[layer] = squared_totals[layer] + fnp.sum(scaled * scaled, axis=0)
+        completed += count
+    mean = fnp.stack(totals, axis=0) / samples
+    squared = fnp.stack(squared_totals, axis=0)
+    # Unbiased sample variance of the directional integrand; roundoff can only
+    # make it slightly negative, so clamp before the square root.
+    variance = fnp.maximum((squared - samples * mean * mean) / (samples - 1), 0.0)
+    standard_error = fnp.sqrt(variance / samples)
+    return SphericalEstimate(
+        predictions=fnp.asarray(mean, dtype=fnp.float32),
+        standard_error=fnp.asarray(standard_error, dtype=fnp.float32),
+        samples=samples,
+    )

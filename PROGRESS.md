@@ -1,33 +1,28 @@
 # Current Phase
-T06 — Freeze the Deterministic Baseline Ladder
+T07 — Implement Spherical Rao-Blackwellized Sampling
 
 # Status
 IN_PROGRESS
 
 # Changes
-- Covariance backbone frozen at `a2c580a`.
-- Frozen revision-bound network-level Full splits in `manifests/dataset_splits.json`.
-- Archived canonical 150-network baseline ladder, paired bootstrap results, and layerwise SVG curve.
-- Disabled the full-covariance runtime default after its validation maximum wall-time breach; exact-first scalar is retained.
+- T06 complete at checkpoint `5b6681c`; exact-first scalar remains the default runtime path.
+- Implementing only the feature-gated spherical sampling primitive and its required differential tests.
 
 # Tests
-- Split and artifact tests pass; official validator passes.
-- Mini local 100-network and extended-official-worker 100-network regressions both completed with zero prediction failures. The fixed five-second CLI worker handshake is documented as a host import limitation.
+- Analytic one-layer, homogeneity, deterministic seed, batch invariance, antithetic marginal, and option-validation tests pass.
+- Equal-forward fixture and full-shape compute/memory profile are archived.
 
 # Metrics
-- Exact scalar: adjusted `1.02718e-4`, P95 `587.76 ms`, 0/150 failures.
-- Covariance: adjusted `3.17649e-5`, but max `483.31 s` and max compute ratio `1.12473`; not safe to ship.
-- Gaussian MC: adjusted `4.09377e-6` on validation; retained only as a T06 comparison pending T07–T10 sampling selection.
+- Fixture variance ratio (spherical/Gaussian) is `0.54735` at 1,024 forward evaluations; full-shape 64-sample compute ratio is `0.01695`.
 
 # Acceptance Criteria
-- [x] Full dataset split manifest is deterministic and network-level.
-- [x] Zero, scalar, exact-first scalar, covariance, and matched Gaussian MC are benchmarked.
-- [x] Paired adjusted-score differences and layerwise errors are archived.
-- [x] Mini local/subprocess regressions have zero prediction failures; fixed five-second CLI worker startup is a documented host limitation.
-- [x] Fallback, deterministic backbone, and numerical tolerances are frozen; compute profile is correctly deferred to T10.
+- [x] Spherical estimator matches analytic one-layer means.
+- [x] Positive homogeneity, seed determinism, and batch invariance are tested.
+- [x] Equal-forward-pass variance comparison against Gaussian MC is measured.
+- [x] Effective compute accounting and memory bound are validated.
 
 # Risks
-- Full public dataset size and 150-network covariance runtime may be substantial on this host.
+- Spherical sampling may not reduce variance for all network geometries; no improvement claim may be made before T08 paired evidence.
 
 # Next Task
-T07 — Implement Spherical Rao-Blackwellized Sampling
+T08 — Execute the Sampling Study

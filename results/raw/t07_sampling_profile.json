@@ -1,0 +1,9 @@
+{
+  "fixture": "synthetic_width256_depth32_samples64_batch16",
+  "analytical_flops": 270909504,
+  "effective_compute": 4609530107.084564,
+  "compute_ratio": 0.016946801864281488,
+  "wall_ms": 409.7859002649784,
+  "peak_tracemalloc_mb": 1.9916486740112305,
+  "finite_nonnegative": true
+}

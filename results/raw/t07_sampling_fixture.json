@@ -1,0 +1,8 @@
+{
+  "fixture": "width4_depth1_32_seeds_1024_forward_evaluations",
+  "spherical_mean_mse": 0.00026808585150495893,
+  "gaussian_mean_mse": 0.0003300738219720931,
+  "variance_ratio_spherical_over_gaussian": 0.5473470094585854,
+  "mean_spherical_flops": 128032.0,
+  "mean_gaussian_flops": 102400.0
+}

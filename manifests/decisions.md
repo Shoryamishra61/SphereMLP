@@ -110,3 +110,8 @@
 - A paired 10-Mini-MPL IID spherical study selected `N=4,096`, batch `512`: mean final MSE `5.14979e-6`, mean compute ratio `0.0952`, maximum ratio `0.0992`, and adjusted score `5.14979e-7`. Higher sampled profiles crossed the 10% multiplier floor and were worse on this slice.
 - Output rows before the final layer are now deterministic zeros in the selected profile. This contains no MLP-ID or split-specific behavior and preserves the full forward pass required to estimate the final layer.
 - Metered orthogonal blocks (`N=4,096`) were rejected: mean final MSE `9.89934e-6`, adjusted score `9.89934e-7`, and maximum compute ratio `0.1028`.
+
+## T08 — Remote candidate-retention correction
+
+- Submission `315975` charged the selected sampler (`1.72e10` effective compute) but returned an all-zero prediction: all-layer MSE `0.7755` and final MSE `0.6997`. This is a retained-candidate failure, not a sampling-accuracy result.
+- The runtime previously used strict `isinstance(value, fnp.ndarray)` validation before retaining a candidate. It is now replaced by coercion to a metered array, explicit shape validation, and deterministic finite/non-negative sanitization. A successful candidate no longer depends on a particular remote wrapper type identity.

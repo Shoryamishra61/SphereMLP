@@ -36,14 +36,19 @@ def _sample_count(budget: int, width: int, depth: int) -> int:
     return (count // _BATCH) * _BATCH
 
 
-def _valid(value: object, depth: int, width: int) -> bool:
-    return (
-        isinstance(value, fnp.ndarray)
-        and tuple(value.shape) == (depth, width)
-        and fnp.issubdtype(value.dtype, fnp.floating)
-        and bool(fnp.all(fnp.isfinite(value)))
-        and bool(fnp.all(value >= 0.0))
-    )
+def _safe(value: object, depth: int, width: int):
+    """Normalize a computed candidate without type-identity assumptions.
+
+    The remote worker may wrap flopscope arrays at its IPC boundary.  Validate
+    shape after coercion, then deterministically remove any numerical residue.
+    """
+    try:
+        array = fnp.asarray(value, dtype=fnp.float32)
+        if tuple(array.shape) != (depth, width):
+            return None
+        return fnp.maximum(fnp.where(fnp.isfinite(array), array, 0.0), 0.0)
+    except Exception:
+        return None
 
 
 def _scalar(mlp):
@@ -110,16 +115,18 @@ class Estimator(BaseEstimator):
             return retained
         try:
             candidate = _scalar(mlp)
-            if _valid(candidate, depth, width):
-                retained = candidate
+            safe = _safe(candidate, depth, width)
+            if safe is not None:
+                retained = safe
         except Exception:
             pass
         samples = _sample_count(budget, width, depth)
         if samples >= _BATCH:
             try:
                 candidate = _spherical(mlp, samples)
-                if _valid(candidate, depth, width):
-                    retained = candidate
+                safe = _safe(candidate, depth, width)
+                if safe is not None:
+                    retained = safe
             except Exception:
                 pass
         return retained

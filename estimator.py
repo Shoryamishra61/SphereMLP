@@ -88,10 +88,17 @@ def _propagate_spherical(mlp: "MLP", *, samples: int, batch_size: int) -> "fnp.n
     return result.predictions
 
 
-def _valid_prediction(candidate: object, *, depth: int, width: int) -> bool:
-    from whest_solution.guards import valid_prediction
+def _safe_prediction(candidate: object, *, depth: int, width: int):
+    """Coerce/validate a branch result without fragile wrapper type identity."""
+    import flopscope.numpy as fnp
 
-    return valid_prediction(candidate, depth=depth, width=width)
+    try:
+        value = fnp.asarray(candidate, dtype=fnp.float32)
+        if tuple(value.shape) != (depth, width):
+            return None
+        return fnp.maximum(fnp.where(fnp.isfinite(value), value, 0.0), 0.0)
+    except Exception:
+        return None
 
 
 class Estimator(BaseEstimator):
@@ -124,8 +131,9 @@ class Estimator(BaseEstimator):
 
         try:
             candidate = _propagate_scalar(mlp)
-            if _valid_prediction(candidate, depth=depth, width=width):
-                retained = candidate
+            safe = _safe_prediction(candidate, depth=depth, width=width)
+            if safe is not None:
+                retained = safe
         except Exception:
             pass
 
@@ -136,8 +144,9 @@ class Estimator(BaseEstimator):
                 spherical_candidate = _propagate_spherical(
                     mlp, samples=samples, batch_size=_SPHERICAL_BATCH_SIZE
                 )
-                if _valid_prediction(spherical_candidate, depth=depth, width=width):
-                    retained = spherical_candidate
+                safe = _safe_prediction(spherical_candidate, depth=depth, width=width)
+                if safe is not None:
+                    retained = safe
             except Exception:
                 pass
 

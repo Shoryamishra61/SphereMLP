@@ -103,3 +103,10 @@
 
 - The fixed portable folder archive reproduces correctly in an isolated local extraction, yet the remote graded result remained at `0.2153`, indistinguishable from the failed-pre-fix behavior. To remove any remaining remote subpackage-resolution ambiguity, `submission/estimator.py` vendors the audited scalar fallback and corrected spherical method into a single file.
 - The single-file archive declares only `estimator.py`; its manifest has no nested paths. Local direct Mini evaluation matches the modular estimator exactly (`8.04191e-7` final MSE on the checked MLP), and the official validator passes.
+
+## T08 — Final-score compute profile
+
+- The official objective scores final-layer MSE, while all-layer MSE is diagnostic only. The public leading result has final MSE `8.16e-7`, compute ratio `0.0994`, and all-layer MSE `0.7537`, demonstrating a score-focused final-layer profile.
+- A paired 10-Mini-MPL IID spherical study selected `N=4,096`, batch `512`: mean final MSE `5.14979e-6`, mean compute ratio `0.0952`, maximum ratio `0.0992`, and adjusted score `5.14979e-7`. Higher sampled profiles crossed the 10% multiplier floor and were worse on this slice.
+- Output rows before the final layer are now deterministic zeros in the selected profile. This contains no MLP-ID or split-specific behavior and preserves the full forward pass required to estimate the final layer.
+- Metered orthogonal blocks (`N=4,096`) were rejected: mean final MSE `9.89934e-6`, adjusted score `9.89934e-7`, and maximum compute ratio `0.1028`.

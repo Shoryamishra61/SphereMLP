@@ -55,7 +55,30 @@ def test_antithetic_has_correct_shape_and_finite_marginals() -> None:
     assert bool(fnp.all(estimate.predictions >= 0.0))
 
 
+def test_orthogonal_blocks_are_deterministic_and_finite() -> None:
+    estimate = _run(
+        _mlp([np.eye(4)]), samples=1024, batch_size=128, orthogonal_blocks=True
+    )
+    repeated = _run(
+        _mlp([np.eye(4)]), samples=1024, batch_size=128, orthogonal_blocks=True
+    )
+    np.testing.assert_array_equal(np.asarray(estimate.predictions), np.asarray(repeated.predictions))
+    assert bool(fnp.all(fnp.isfinite(estimate.predictions)))
+
+
+def test_final_layer_only_preserves_final_estimate() -> None:
+    mlp = _mlp([np.eye(4), np.full((4, 4), 0.2)])
+    full = _run(mlp, samples=1024, batch_size=128)
+    final_only = _run(mlp, samples=1024, batch_size=128, final_layer_only=True)
+    np.testing.assert_array_equal(
+        np.asarray(final_only.predictions[-1]), np.asarray(full.predictions[-1])
+    )
+    np.testing.assert_array_equal(np.asarray(final_only.predictions[:-1]), 0.0)
+
+
 def test_sampling_options_are_checked() -> None:
     mlp = _mlp([np.eye(2)])
     with np.testing.assert_raises(ValueError):
         _run(mlp, samples=3, batch_size=2, antithetic=True)
+    with np.testing.assert_raises(ValueError):
+        _run(mlp, samples=129, batch_size=128, orthogonal_blocks=True)

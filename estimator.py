@@ -41,9 +41,9 @@ if TYPE_CHECKING:
 # Target: 30% analytical ratio → ~75% effective ratio (safe margin)
 # This gives N ≈ 0.30 × B / 4.23M ≈ 19,300 → round to 17,408 (34 × 512)
 # ---------------------------------------------------------------------------
-_DEFAULT_SPHERICAL_SAMPLES = 17408
+_DEFAULT_SPHERICAL_SAMPLES = 4096
 _SPHERICAL_BATCH_SIZE = 512
-_BUDGET_ANALYTICAL_FRACTION = 0.30
+_BUDGET_ANALYTICAL_FRACTION = 0.10
 
 
 def _per_sample_flops(*, width: int, depth: int) -> int:
@@ -82,7 +82,9 @@ def _propagate_scalar(mlp: "MLP") -> "fnp.ndarray":
 def _propagate_spherical(mlp: "MLP", *, samples: int, batch_size: int) -> "fnp.ndarray":
     from whest_solution.sampling import spherical_propagation
 
-    result = spherical_propagation(mlp, samples=samples, batch_size=batch_size)
+    result = spherical_propagation(
+        mlp, samples=samples, batch_size=batch_size, final_layer_only=True
+    )
     return result.predictions
 
 

@@ -37,3 +37,9 @@ Methods are appended only after paired compute-adjusted evidence is available.
 - Root cause: deep ReLU nonlinearities destroy the U/−U correlation within 2-3 layers.
   After sufficient depth, the antithetic pair is no more correlated than two IID samples.
 - Decision: rejected. `antithetic=False` (IID) remains the selection.
+
+## T08 — Orthogonal spherical blocks at N=4,096
+
+- Evidence: paired 10-Mini-MPL study in `results/raw/t08_final_profile_mini10.json`.
+- Mean final MSE `9.89934e-6` versus IID `5.14979e-6`; maximum compute ratio `0.1028` exceeds the 10% score-floor target.
+- Decision: rejected; IID spherical directions are retained for the final-layer profile.

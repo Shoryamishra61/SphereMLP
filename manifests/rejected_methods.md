@@ -43,3 +43,9 @@ Methods are appended only after paired compute-adjusted evidence is available.
 - Evidence: paired 10-Mini-MPL study in `results/raw/t08_final_profile_mini10.json`.
 - Mean final MSE `9.89934e-6` versus IID `5.14979e-6`; maximum compute ratio `0.1028` exceeds the 10% score-floor target.
 - Decision: rejected; IID spherical directions are retained for the final-layer profile.
+
+## T08 — Randomized Latin-hypercube spherical directions at N=4,096
+
+- Evidence: paired ten-Mini profile in `results/raw/t08_final_profile_mini10.json`, with four independent randomizations additionally recorded in `results/raw/t08_rqmc_randomizations.json`.
+- Raw final MSE was marginally lower than IID (`5.08114e-6` versus `5.14979e-6`), but mean effective compute ratio rose from `0.09522` to `0.10970`, P95 wall time from `856.99 ms` to `1647.45 ms`, and adjusted score worsened from `5.14979e-7` to `5.57383e-7`.
+- Decision: reject as a shipped method.  Preserve only as an experimental implementation and retain IID spherical directions for T09/T10.

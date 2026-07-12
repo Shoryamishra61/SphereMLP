@@ -3,38 +3,45 @@
   "profiles": {
     "iid_4096": {
       "raw_final_mse_mean": 5.149786854136611e-06,
-      "adjusted_score_mean": 5.149786854136612e-07,
-      "mean_compute_ratio": 0.0952173131311709,
-      "max_compute_ratio": 0.09918518693807174,
-      "p95_wall_ms": 856.9898599525914
+      "adjusted_score_mean": 5.249835819327379e-07,
+      "mean_compute_ratio": 0.10194277876006463,
+      "max_compute_ratio": 0.10973706537410202,
+      "p95_wall_ms": 1100.395139795728
     },
     "orthogonal_4096": {
       "raw_final_mse_mean": 9.899339649561754e-06,
-      "adjusted_score_mean": 9.899339649561755e-07,
-      "mean_compute_ratio": 0.0973019423726265,
-      "max_compute_ratio": 0.10277605436579362,
-      "p95_wall_ms": 1084.1666151303798
+      "adjusted_score_mean": 1.0659535837681082e-06,
+      "mean_compute_ratio": 0.10767926159754486,
+      "max_compute_ratio": 0.11265561548638305,
+      "p95_wall_ms": 1567.0987950405104
+    },
+    "lhs_rqmc_4096": {
+      "raw_final_mse_mean": 5.0811405972158716e-06,
+      "adjusted_score_mean": 5.573831662255169e-07,
+      "mean_compute_ratio": 0.10969646589408015,
+      "max_compute_ratio": 0.12973150643494738,
+      "p95_wall_ms": 1647.4479349330063
     },
     "iid_5120": {
       "raw_final_mse_mean": 4.502846240094637e-06,
-      "adjusted_score_mean": 5.325187990786714e-07,
-      "mean_compute_ratio": 0.11826271000261368,
-      "max_compute_ratio": 0.12104200761544029,
-      "p95_wall_ms": 996.3295952416956
+      "adjusted_score_mean": 5.748835237891284e-07,
+      "mean_compute_ratio": 0.12767114245878536,
+      "max_compute_ratio": 0.13979855049070739,
+      "p95_wall_ms": 1378.788850060664
     },
     "iid_5632": {
       "raw_final_mse_mean": 4.50181311373627e-06,
-      "adjusted_score_mean": 5.972234229843522e-07,
-      "mean_compute_ratio": 0.13266286447166348,
-      "max_compute_ratio": 0.14254456835321033,
-      "p95_wall_ms": 1312.9315499681977
+      "adjusted_score_mean": 7.778464542895251e-07,
+      "mean_compute_ratio": 0.17278515003568265,
+      "max_compute_ratio": 0.19158306063332367,
+      "p95_wall_ms": 2291.997839906253
     },
     "iid_6144": {
       "raw_final_mse_mean": 3.99895644467611e-06,
-      "adjusted_score_mean": 5.616042374251973e-07,
-      "mean_compute_ratio": 0.1404376979831506,
-      "max_compute_ratio": 0.1528155580864735,
-      "p95_wall_ms": 1337.5716598937286
+      "adjusted_score_mean": 7.302456959384143e-07,
+      "mean_compute_ratio": 0.1826090646500051,
+      "max_compute_ratio": 0.2067714017175421,
+      "p95_wall_ms": 3240.256744716315
     }
   }
 }

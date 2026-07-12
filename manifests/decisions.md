@@ -117,9 +117,10 @@
 - The runtime previously used strict `isinstance(value, fnp.ndarray)` validation before retaining a candidate. It is now replaced by coercion to a metered array, explicit shape validation, and deterministic finite/non-negative sanitization. A successful candidate no longer depends on a particular remote wrapper type identity.
 - The single-file output assembly also replaced `final[None, :]` with `fnp.reshape(final, (1, width))`. Remote flopscope arrays can differ from the local wrapper in advanced-indexing support; reshape is explicitly metered and avoids a post-computation exception that would otherwise be silently downgraded to zero.
 
-## T08 — Randomized-LHS spherical directions
+## T08 — Randomized-LHS spherical directions (rejected as runtime default)
 
 - A randomized Latin-hypercube design is generated in Gaussian quantile space, with an independent permutation and continuous jitter per input coordinate, then row-normalized.  Each direction is marginally uniform on the sphere; the resulting estimator is therefore unbiased under the same radial identity as IID spherical sampling.  Dependence across rows means its benefit is empirical, not assumed.
-- On the paired first four Mini MLPs at 4,096 full forward evaluations, LHS reduced mean raw final MSE from `7.35751e-6` (IID) to `5.28534e-6` and adjusted score from `7.35751e-7` to `5.43816e-7`.  Mean effective-compute ratio was `0.10289`; maximum was `0.10524` in the local profile.
+- A preliminary paired first-four-Mini slice favored LHS (`5.28534e-6` raw final MSE versus IID `7.35751e-6`).  This was not used as a selection result.
 - On one fixed Mini MLP across four independent randomization seeds, LHS reduced mean final MSE from `7.80436e-6` to `4.04783e-6`; MSE-across-randomizations variance fell from `1.04766e-11` to `5.48971e-12`.  The direct metered full-submission check returned finite shape `(32, 256)`, final MSE `1.38559e-6`, and effective ratio `0.08757`.
-- Decision: retain LHS as the selected T08 directional design.  It remains covered by scalar fallback and output validation.  The final sample count is a T10 compute-frontier decision, not inferred from this geometry experiment.
+- The completed paired ten-Mini profile is decisive: LHS raw final MSE was `5.08114e-6` versus IID `5.14979e-6` (only 1.3% lower), while its mean compute ratio rose from `0.09522` to `0.10970`.  Its adjusted score therefore worsened from `5.14979e-7` to `5.57383e-7`; P95 wall time rose from `856.99 ms` to `1647.45 ms`.
+- Decision: retain the implementation only as a documented research branch and keep IID spherical directions as the shipped T08 selection.  The final sample count is a T10 compute-frontier decision, not inferred from this geometry experiment.

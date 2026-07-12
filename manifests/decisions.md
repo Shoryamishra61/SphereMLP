@@ -93,3 +93,8 @@
 - The Phase 1 submission that scored `0.2143` was packaged before the spherical implementation was corrected. It multiplied `E[R]` inside every ReLU layer. Positive homogeneity applies to the complete zero-bias network, so the correct estimator is `E[R] * E_U[h(U)]`, with the radial factor applied exactly once after all layerwise directional means have been accumulated.
 - Direct official Mini differential check after the correction (`daniel-harrison`, `N=17,408`, batch 512) produced final-layer MSE `8.04191e-7`, all-layer MSE `6.60625e-6`, and finite/non-negative output. This establishes the submitted low score as a pre-fix artifact, not expected behavior of the corrected implementation.
 - A depth-two identity-ReLU analytic regression now enforces the once-only radial factor. Reapplying it per layer fails this test.
+
+## T08 — Portable submission manifest repair
+
+- WhestBench `0.12.0rc3` on Windows generated tar members with POSIX paths but wrote Windows backslashes in `manifest.json`. The Phase 1 grader reported `MANIFEST_INVALID` because it compared those names literally.
+- `tools/repair_submission_manifest.py` normalizes only manifest file names to POSIX separators and verifies each declared member and SHA-256 digest against the repaired tar archive. It does not alter estimator payload bytes.

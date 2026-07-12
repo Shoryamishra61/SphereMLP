@@ -25,6 +25,19 @@ def test_spherical_matches_one_layer_analytic_mean() -> None:
     np.testing.assert_allclose(np.asarray(estimate.predictions[0]), expected, atol=0.015)
 
 
+def test_radial_factor_is_applied_once_for_all_layers() -> None:
+    """Repeated ReLUs with identity weights must retain the same mean.
+
+    This catches the catastrophic error of multiplying the chi-radius mean
+    inside every layer of the directional forward pass.
+    """
+    width = 2
+    estimate = _run(_mlp([np.eye(width), np.eye(width)]), samples=32768, batch_size=1024)
+    expected = np.full(width, 1.0 / np.sqrt(2.0 * np.pi))
+    np.testing.assert_allclose(np.asarray(estimate.predictions[0]), expected, atol=0.015)
+    np.testing.assert_allclose(np.asarray(estimate.predictions[1]), expected, atol=0.015)
+
+
 def test_spherical_seed_determinism_and_batch_invariance() -> None:
     mlp = _mlp([np.eye(4), np.full((4, 4), 0.2)])
     first = _run(mlp, samples=1024, batch_size=128)

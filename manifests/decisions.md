@@ -87,3 +87,9 @@
 - The implementation never retains a direction matrix beyond the active batch and keeps only `O(depth * width)` first/second-sum accumulators. It returns all-layer predictions plus directional standard errors.
 - A 32-seed, equal-1,024-forward-evaluation width-4 one-layer analytic fixture measured spherical mean MSE `2.68086e-4` versus Gaussian MC `3.30074e-4`; the MSE-across-randomizations variance ratio was `0.54735`. This is a fixture measurement only, not a retained validation-performance claim.
 - Full-shape synthetic profile at 64 samples / batch 16: `270,909,504` analytical FLOPs, effective-compute ratio `0.01695`, `409.79 ms`, active traced allocation `1.99 MB`, finite non-negative output. T08 determines actual geometry/profile selection.
+
+## T08 — Submission radial-factor correction
+
+- The Phase 1 submission that scored `0.2143` was packaged before the spherical implementation was corrected. It multiplied `E[R]` inside every ReLU layer. Positive homogeneity applies to the complete zero-bias network, so the correct estimator is `E[R] * E_U[h(U)]`, with the radial factor applied exactly once after all layerwise directional means have been accumulated.
+- Direct official Mini differential check after the correction (`daniel-harrison`, `N=17,408`, batch 512) produced final-layer MSE `8.04191e-7`, all-layer MSE `6.60625e-6`, and finite/non-negative output. This establishes the submitted low score as a pre-fix artifact, not expected behavior of the corrected implementation.
+- A depth-two identity-ReLU analytic regression now enforces the once-only radial factor. Reapplying it per layer fails this test.

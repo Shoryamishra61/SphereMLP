@@ -62,11 +62,11 @@ def spherical_propagation(
             # the negative directions.
             base_count = count // 2
             directions = fnp.asarray(
-                rng.standard_normal((base_count, mlp.width), dtype=fnp.float32)
+                rng.standard_normal((base_count, mlp.width), dtype=fnp.float64)
             )
             directions = fnp.concatenate((directions, -directions), axis=0)
         else:
-            directions = fnp.asarray(rng.standard_normal((count, mlp.width), dtype=fnp.float32))
+            directions = fnp.asarray(rng.standard_normal((count, mlp.width), dtype=fnp.float64))
         norms = fnp.sqrt(fnp.sum(directions * directions, axis=1, keepdims=True))
         safe_norms = fnp.where(norms > 0.0, norms, 1.0)
         activations = directions / safe_norms

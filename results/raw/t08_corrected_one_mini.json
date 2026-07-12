@@ -1,0 +1,9 @@
+{
+  "mlp": "daniel-harrison",
+  "raw_final_mse": 8.041910858114671e-07,
+  "all_layer_mse": 6.6062483201974115e-06,
+  "finite_nonnegative": true,
+  "analytical_flops": 73527034880,
+  "residual_seconds": 0.7887615840882063,
+  "wall_seconds": 5.918010999914259
+}

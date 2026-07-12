@@ -14,9 +14,9 @@ import flopscope.numpy as fnp
 from whestbench import BaseEstimator
 
 
-_SAMPLES = 4096
+_SAMPLES = 5632
 _BATCH = 512
-_ANALYTICAL_FRACTION = 0.10
+_ANALYTICAL_FRACTION = 0.14
 _INV_SQRT_2PI = 1.0 / (2.0 * pi) ** 0.5
 
 

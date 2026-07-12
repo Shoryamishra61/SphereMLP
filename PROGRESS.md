@@ -10,6 +10,7 @@ DONE
 - T08 reopened after remote-score evidence; comparing randomized-LHS spherical directions against IID under the same forward-pass count.
 - Tested randomized-LHS directions at equal N=4,096.  The completed paired ten-Mini run rejected it on adjusted score; IID remains selected.  Modular and single-file paths preserve scalar fallback/output guards.
 - T09 fixed scalar/spherical fusion implemented and rejected before calibration: on the initial paired Mini gate, every nontrivial blend increased raw final MSE and the optimum was the spherical endpoint.
+- T10: next remote-calibrated profile is N=5,632 / batch 512.  It extrapolates from the successful remote N=4,096 ratio of 6.76%, deliberately targeting below the 10% multiplier floor; it requires remote evaluation before retention.
 - Scalar propagation retained as validated fallback (safety contract).
 - Budget-adaptive sample count: 17,408 samples at batch_size=512.
 - Calibrated from actual Mini runner measurements (effective ≈ 2.5× analytical FLOPs).

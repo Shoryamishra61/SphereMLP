@@ -130,3 +130,9 @@
 - The fusion primitive enforces bounded global or layerwise coefficients and is permutation equivariant.  It is not enabled by the runtime.
 - Initial paired Mini gate, three networks at the selected 4,096 IID spherical evaluations: mean final MSE was `1.50681e-3` for scalar, `9.13437e-6` for pure spherical, and `2.90009e-5` even for the closest tested nontrivial blend (`lambda=0.9`).  The empirical minimizer is the endpoint `lambda=1.0`.
 - Decision: reject fixed and layerwise fitting without consuming calibration or holdout data.  The parent is dominated by more than two orders of magnitude, so a fitted convex combination cannot plausibly satisfy the required improvement-over-both-parents gate.
+
+## T10 — Remote-calibrated IID sample-count candidate
+
+- Successful remote submission `315988` measured an effective compute ratio of `0.0676` at `N=4,096`.  Scaling the same batched implementation to `N=5,632` projects `0.0930`, below the official 10% score multiplier floor.  This is a projection, not a claimed measurement.
+- Mini local profiling is slower and measured `0.1327` at `N=5,632`; it is retained as a tail-risk observation, but does not match the remote worker that is authoritative for the score.
+- Candidate decision: prepare, validate, and externally evaluate `N=5,632`, batch 512.  It is not declared retained until the remote grade confirms finiteness, zero failures, compute safety, and an improved adjusted score.

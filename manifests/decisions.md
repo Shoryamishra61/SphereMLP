@@ -98,3 +98,8 @@
 
 - WhestBench `0.12.0rc3` on Windows generated tar members with POSIX paths but wrote Windows backslashes in `manifest.json`. The Phase 1 grader reported `MANIFEST_INVALID` because it compared those names literally.
 - `tools/repair_submission_manifest.py` normalizes only manifest file names to POSIX separators and verifies each declared member and SHA-256 digest against the repaired tar archive. It does not alter estimator payload bytes.
+
+## T08 — Single-file submission hardening
+
+- The fixed portable folder archive reproduces correctly in an isolated local extraction, yet the remote graded result remained at `0.2153`, indistinguishable from the failed-pre-fix behavior. To remove any remaining remote subpackage-resolution ambiguity, `submission/estimator.py` vendors the audited scalar fallback and corrected spherical method into a single file.
+- The single-file archive declares only `estimator.py`; its manifest has no nested paths. Local direct Mini evaluation matches the modular estimator exactly (`8.04191e-7` final MSE on the checked MLP), and the official validator passes.

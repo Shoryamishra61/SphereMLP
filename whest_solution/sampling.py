@@ -43,11 +43,15 @@ def spherical_propagation(
 
     For a zero-bias ReLU network ``h`` and ``X = R U`` with ``U`` uniform on
     the unit sphere, positive homogeneity gives ``E[h(X)] = E[R] E[h(U)]``.
-    Only a batch of directions and ``O(depth * width)`` accumulators is kept.
+    We propagate unit-sphere directions through the network and accumulate
+    the raw direction-space activations.  The scalar ``E[R] = chi_mean(width)``
+    is applied **once** to the final mean and standard error — not inside the
+    per-layer loop (which would compound the factor by ``depth`` times).
     """
     _validate_options(samples=samples, batch_size=batch_size, antithetic=antithetic)
     rng = fnp.random.default_rng(estimator_seed(mlp) if seed is None else int(seed))
     radial_mean = chi_mean(int(mlp.width))
+    # Accumulators for the direction-space activations (no radial factor yet).
     totals = [fnp.zeros((mlp.width,), dtype=fnp.float64) for _ in range(mlp.depth)]
     squared_totals = [fnp.zeros((mlp.width,), dtype=fnp.float64) for _ in range(mlp.depth)]
     completed = 0
@@ -68,18 +72,24 @@ def spherical_propagation(
         activations = directions / safe_norms
         for layer, weight in enumerate(mlp.weights):
             activations = fnp.maximum(activations @ weight, 0.0)
-            scaled = activations * radial_mean
-            totals[layer] = totals[layer] + fnp.sum(scaled, axis=0)
-            squared_totals[layer] = squared_totals[layer] + fnp.sum(scaled * scaled, axis=0)
+            # Accumulate raw direction-space values — no radial factor here.
+            totals[layer] = totals[layer] + fnp.sum(activations, axis=0)
+            squared_totals[layer] = squared_totals[layer] + fnp.sum(
+                activations * activations, axis=0
+            )
         completed += count
-    mean = fnp.stack(totals, axis=0) / samples
+    # Direction-space means: E_U[h(U)]
+    dir_mean = fnp.stack(totals, axis=0) / samples
     squared = fnp.stack(squared_totals, axis=0)
-    # Unbiased sample variance of the directional integrand; roundoff can only
-    # make it slightly negative, so clamp before the square root.
-    variance = fnp.maximum((squared - samples * mean * mean) / (samples - 1), 0.0)
-    standard_error = fnp.sqrt(variance / samples)
+    # Unbiased sample variance of E_U[h(U)]; clamp for numerical safety.
+    variance = fnp.maximum((squared - samples * dir_mean * dir_mean) / (samples - 1), 0.0)
+    dir_se = fnp.sqrt(variance / samples)
+    # Apply the radial factor once: E[h(X)] = E[R] * E_U[h(U)]
+    mean = dir_mean * radial_mean
+    standard_error = dir_se * radial_mean
     return SphericalEstimate(
         predictions=fnp.asarray(mean, dtype=fnp.float32),
         standard_error=fnp.asarray(standard_error, dtype=fnp.float32),
         samples=samples,
     )
+

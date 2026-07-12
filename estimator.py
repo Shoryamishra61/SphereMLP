@@ -41,9 +41,9 @@ if TYPE_CHECKING:
 # Target: 30% analytical ratio → ~75% effective ratio (safe margin)
 # This gives N ≈ 0.30 × B / 4.23M ≈ 19,300 → round to 17,408 (34 × 512)
 # ---------------------------------------------------------------------------
-_DEFAULT_SPHERICAL_SAMPLES = 5632
+_DEFAULT_SPHERICAL_SAMPLES = 6144
 _SPHERICAL_BATCH_SIZE = 512
-_BUDGET_ANALYTICAL_FRACTION = 0.14
+_BUDGET_ANALYTICAL_FRACTION = 0.15
 
 
 def _per_sample_flops(*, width: int, depth: int) -> int:

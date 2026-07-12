@@ -104,7 +104,8 @@ def _spherical(mlp, samples: int):
     # The official objective scores only the final layer.  Keep the unscored
     # rows deterministic, finite, and free rather than spending extra work on
     # their reductions.
-    return fnp.concatenate((fnp.zeros((depth - 1, width), dtype=fnp.float32), final[None, :]), axis=0)
+    final_row = fnp.reshape(final, (1, width))
+    return fnp.concatenate((fnp.zeros((depth - 1, width), dtype=fnp.float32), final_row), axis=0)
 
 
 class Estimator(BaseEstimator):

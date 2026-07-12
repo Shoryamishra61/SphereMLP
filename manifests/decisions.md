@@ -115,3 +115,4 @@
 
 - Submission `315975` charged the selected sampler (`1.72e10` effective compute) but returned an all-zero prediction: all-layer MSE `0.7755` and final MSE `0.6997`. This is a retained-candidate failure, not a sampling-accuracy result.
 - The runtime previously used strict `isinstance(value, fnp.ndarray)` validation before retaining a candidate. It is now replaced by coercion to a metered array, explicit shape validation, and deterministic finite/non-negative sanitization. A successful candidate no longer depends on a particular remote wrapper type identity.
+- The single-file output assembly also replaced `final[None, :]` with `fnp.reshape(final, (1, width))`. Remote flopscope arrays can differ from the local wrapper in advanced-indexing support; reshape is explicitly metered and avoids a post-computation exception that would otherwise be silently downgraded to zero.

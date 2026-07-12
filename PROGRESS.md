@@ -1,5 +1,5 @@
 # Current Phase
-T08 — Sampling Study (COMPLETE)
+T10 — Compute Frontier Optimization (IN_PROGRESS)
 
 # Status
 DONE
@@ -9,6 +9,7 @@ DONE
 - T08: Integrated spherical Rao-Blackwellized sampling into `estimator.py` as primary estimator.
 - T08 reopened after remote-score evidence; comparing randomized-LHS spherical directions against IID under the same forward-pass count.
 - Tested randomized-LHS directions at equal N=4,096.  The completed paired ten-Mini run rejected it on adjusted score; IID remains selected.  Modular and single-file paths preserve scalar fallback/output guards.
+- T09 fixed scalar/spherical fusion implemented and rejected before calibration: on the initial paired Mini gate, every nontrivial blend increased raw final MSE and the optimum was the spherical endpoint.
 - Scalar propagation retained as validated fallback (safety contract).
 - Budget-adaptive sample count: 17,408 samples at batch_size=512.
 - Calibrated from actual Mini runner measurements (effective ≈ 2.5× analytical FLOPs).
@@ -43,4 +44,4 @@ Improvement over scalar baseline: **52×** reduction in adjusted score.
 - Conservative 30% analytical budget fraction used to guarantee safety.
 
 # Next Task
-T09 — Implement fixed and layerwise scalar/sampling fusion, retaining sampling unless a held-out blend is favorable.
+T10 — Optimize the compute frontier using only the retained IID spherical estimator.

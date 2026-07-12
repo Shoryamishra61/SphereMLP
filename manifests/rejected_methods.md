@@ -49,3 +49,9 @@ Methods are appended only after paired compute-adjusted evidence is available.
 - Evidence: paired ten-Mini profile in `results/raw/t08_final_profile_mini10.json`, with four independent randomizations additionally recorded in `results/raw/t08_rqmc_randomizations.json`.
 - Raw final MSE was marginally lower than IID (`5.08114e-6` versus `5.14979e-6`), but mean effective compute ratio rose from `0.09522` to `0.10970`, P95 wall time from `856.99 ms` to `1647.45 ms`, and adjusted score worsened from `5.14979e-7` to `5.57383e-7`.
 - Decision: reject as a shipped method.  Preserve only as an experimental implementation and retain IID spherical directions for T09/T10.
+
+## T09 — Fixed/layerwise scalar plus spherical fusion
+
+- Evidence: paired three-Mini exploratory gate at 4,096 IID spherical evaluations; λ grid `0.0, 0.1, ..., 1.0`.
+- Pure spherical (`lambda=1.0`) was the optimum.  Even `lambda=0.9` gave `2.90009e-5` final MSE, versus `9.13437e-6` for pure spherical; scalar was `1.50681e-3`.
+- Decision: reject before calibration/holdout fitting.  The required held-out improvement over both parents is impossible with this observed dominated parent; runtime stays scalar fallback then spherical replacement.

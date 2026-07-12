@@ -124,3 +124,9 @@
 - On one fixed Mini MLP across four independent randomization seeds, LHS reduced mean final MSE from `7.80436e-6` to `4.04783e-6`; MSE-across-randomizations variance fell from `1.04766e-11` to `5.48971e-12`.  The direct metered full-submission check returned finite shape `(32, 256)`, final MSE `1.38559e-6`, and effective ratio `0.08757`.
 - The completed paired ten-Mini profile is decisive: LHS raw final MSE was `5.08114e-6` versus IID `5.14979e-6` (only 1.3% lower), while its mean compute ratio rose from `0.09522` to `0.10970`.  Its adjusted score therefore worsened from `5.14979e-7` to `5.57383e-7`; P95 wall time rose from `856.99 ms` to `1647.45 ms`.
 - Decision: retain the implementation only as a documented research branch and keep IID spherical directions as the shipped T08 selection.  The final sample count is a T10 compute-frontier decision, not inferred from this geometry experiment.
+
+## T09 — Scalar/spherical convex fusion (rejected)
+
+- The fusion primitive enforces bounded global or layerwise coefficients and is permutation equivariant.  It is not enabled by the runtime.
+- Initial paired Mini gate, three networks at the selected 4,096 IID spherical evaluations: mean final MSE was `1.50681e-3` for scalar, `9.13437e-6` for pure spherical, and `2.90009e-5` even for the closest tested nontrivial blend (`lambda=0.9`).  The empirical minimizer is the endpoint `lambda=1.0`.
+- Decision: reject fixed and layerwise fitting without consuming calibration or holdout data.  The parent is dominated by more than two orders of magnitude, so a fitted convex combination cannot plausibly satisfy the required improvement-over-both-parents gate.

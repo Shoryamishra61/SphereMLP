@@ -1,0 +1,19 @@
+{
+  "mlp_count": 4,
+  "profiles": {
+    "iid_4096": {
+      "raw_final_mse_mean": 7.357510148909793e-06,
+      "adjusted_score_mean": 7.357510148909793e-07,
+      "mean_compute_ratio": 0.09918860026098755,
+      "max_compute_ratio": 0.1047442371764343,
+      "p95_wall_ms": 980.5858650943264
+    },
+    "lhs_rqmc_4096": {
+      "raw_final_mse_mean": 5.285335370813758e-06,
+      "adjusted_score_mean": 5.438164110118602e-07,
+      "mean_compute_ratio": 0.10289156181363214,
+      "max_compute_ratio": 0.1052386028566331,
+      "p95_wall_ms": 1216.3790901657194
+    }
+  }
+}

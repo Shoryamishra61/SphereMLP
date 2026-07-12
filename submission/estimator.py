@@ -83,17 +83,32 @@ def _chi_mean(dimension: int) -> float:
     return exp(0.5 * log(2.0) + lgamma((dimension + 1.0) / 2.0) - lgamma(dimension / 2.0))
 
 
+def _lhs_directions(rng, count: int, width: int):
+    """Randomized-LHS normal directions, marginally uniform after projection.
+
+    Each normal coordinate uses all equal-probability quantile strata once.
+    The independent random permutations and jitters retain uniform spherical
+    marginals for each row; only cross-row dependence changes.
+    """
+    strata = fnp.stack(
+        [fnp.asarray(rng.permutation(count), dtype=fnp.float64) for _ in range(width)], axis=1
+    )
+    uniforms = (strata + fnp.asarray(rng.random((count, width), dtype=fnp.float64))) / float(count)
+    gaussian = flops.stats.norm.ppf(uniforms)
+    norm = fnp.sqrt(fnp.sum(gaussian * gaussian, axis=1, keepdims=True))
+    return gaussian / fnp.where(norm > 0.0, norm, 1.0)
+
+
 def _spherical(mlp, samples: int):
     """Rao-Blackwellized Gaussian sampling: E[h(X)] = E[R] E[h(U)]."""
     width, depth = int(mlp.width), int(mlp.depth)
     rng = fnp.random.default_rng(int(mlp.seed))
     final_sum = fnp.zeros((width,), dtype=fnp.float64)
+    directions = _lhs_directions(rng, samples, width)
     complete = 0
     while complete < samples:
         count = min(_BATCH, samples - complete)
-        direction = fnp.asarray(rng.standard_normal((count, width), dtype=fnp.float64))
-        norm = fnp.sqrt(fnp.sum(direction * direction, axis=1, keepdims=True))
-        value = direction / fnp.where(norm > 0.0, norm, 1.0)
+        value = directions[complete : complete + count]
         for layer, weight in enumerate(mlp.weights):
             value = fnp.maximum(value @ weight, 0.0)
         final_sum = final_sum + fnp.sum(value, axis=0)

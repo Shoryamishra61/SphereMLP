@@ -1,0 +1,18 @@
+{
+  "iid": {
+    "randomizations": 4,
+    "raw_final_mse_mean": 7.804358388649726e-06,
+    "raw_final_mse_variance": 1.0476645665216205e-11,
+    "mean_compute_ratio": 0.08526714648995555,
+    "max_compute_ratio": 0.08689890992497924,
+    "p95_wall_ms": 537.0678748236969
+  },
+  "lhs_rqmc": {
+    "randomizations": 4,
+    "raw_final_mse_mean": 4.047826953209304e-06,
+    "raw_final_mse_variance": 5.489710065723351e-12,
+    "mean_compute_ratio": 0.091186847855466,
+    "max_compute_ratio": 0.099099197444772,
+    "p95_wall_ms": 895.4947150079533
+  }
+}

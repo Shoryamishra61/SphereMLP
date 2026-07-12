@@ -66,6 +66,15 @@ def test_orthogonal_blocks_are_deterministic_and_finite() -> None:
     assert bool(fnp.all(fnp.isfinite(estimate.predictions)))
 
 
+def test_randomized_latin_hypercube_is_deterministic_and_finite() -> None:
+    kwargs = dict(samples=1024, batch_size=128, latin_hypercube=True, seed=91)
+    estimate = _run(_mlp([np.eye(4)]), **kwargs)
+    repeated = _run(_mlp([np.eye(4)]), **kwargs)
+    np.testing.assert_array_equal(np.asarray(estimate.predictions), np.asarray(repeated.predictions))
+    assert bool(fnp.all(fnp.isfinite(estimate.predictions)))
+    assert bool(fnp.all(estimate.predictions >= 0.0))
+
+
 def test_final_layer_only_preserves_final_estimate() -> None:
     mlp = _mlp([np.eye(4), np.full((4, 4), 0.2)])
     full = _run(mlp, samples=1024, batch_size=128)
@@ -82,3 +91,5 @@ def test_sampling_options_are_checked() -> None:
         _run(mlp, samples=3, batch_size=2, antithetic=True)
     with np.testing.assert_raises(ValueError):
         _run(mlp, samples=129, batch_size=128, orthogonal_blocks=True)
+    with np.testing.assert_raises(ValueError):
+        _run(mlp, samples=1024, batch_size=128, antithetic=True, latin_hypercube=True)

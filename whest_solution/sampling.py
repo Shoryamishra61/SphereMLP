@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import flopscope.numpy as fnp
+import flopscope as flops
 from whestbench import MLP
 
 from .contracts import estimator_seed
@@ -21,7 +22,13 @@ class SphericalEstimate:
 
 
 def _validate_options(
-    *, samples: int, batch_size: int, antithetic: bool, orthogonal_blocks: bool, width: int
+    *,
+    samples: int,
+    batch_size: int,
+    antithetic: bool,
+    orthogonal_blocks: bool,
+    latin_hypercube: bool,
+    width: int,
 ) -> None:
     if samples <= 1:
         raise ValueError("samples must exceed one to estimate uncertainty")
@@ -31,8 +38,9 @@ def _validate_options(
         raise ValueError("antithetic sampling requires an even total sample count")
     if antithetic and batch_size % 2:
         raise ValueError("antithetic sampling requires an even batch_size")
-    if orthogonal_blocks and antithetic:
-        raise ValueError("orthogonal and antithetic direction modes are mutually exclusive")
+    selected_designs = int(antithetic) + int(orthogonal_blocks) + int(latin_hypercube)
+    if selected_designs > 1:
+        raise ValueError("direction designs are mutually exclusive")
     if orthogonal_blocks and (samples % width or batch_size % width):
         raise ValueError("orthogonal blocks require sample and batch counts divisible by width")
 
@@ -49,6 +57,26 @@ def _orthogonal_directions(rng, *, width: int, count: int) -> fnp.ndarray:
     return blocks[0] if len(blocks) == 1 else fnp.concatenate(blocks, axis=0)
 
 
+def _latin_hypercube_directions(rng, *, width: int, count: int) -> fnp.ndarray:
+    """Generate randomized-LHS Gaussian directions, then project to the sphere.
+
+    Each coordinate has one jittered observation in every one of ``count``
+    equiprobable normal-quantile strata.  Independent random permutations per
+    coordinate make each row marginally iid standard normal before the
+    normalization, so every returned direction remains marginally uniform on
+    the sphere.  Samples are dependent across rows, hence this is treated as
+    an empirical RQMC candidate and evaluated over independent seeds.
+    """
+    strata = fnp.stack(
+        [fnp.asarray(rng.permutation(count), dtype=fnp.float64) for _ in range(width)], axis=1
+    )
+    jitter = fnp.asarray(rng.random((count, width), dtype=fnp.float64))
+    uniforms = (strata + jitter) / float(count)
+    gaussian = flops.stats.norm.ppf(uniforms)
+    norms = fnp.sqrt(fnp.sum(gaussian * gaussian, axis=1, keepdims=True))
+    return gaussian / fnp.where(norms > 0.0, norms, 1.0)
+
+
 def spherical_propagation(
     mlp: MLP,
     *,
@@ -56,6 +84,7 @@ def spherical_propagation(
     batch_size: int,
     antithetic: bool = False,
     orthogonal_blocks: bool = False,
+    latin_hypercube: bool = False,
     final_layer_only: bool = False,
     seed: int | None = None,
 ) -> SphericalEstimate:
@@ -73,6 +102,7 @@ def spherical_propagation(
         batch_size=batch_size,
         antithetic=antithetic,
         orthogonal_blocks=orthogonal_blocks,
+        latin_hypercube=latin_hypercube,
         width=int(mlp.width),
     )
     rng = fnp.random.default_rng(estimator_seed(mlp) if seed is None else int(seed))
@@ -80,10 +110,19 @@ def spherical_propagation(
     # Accumulators for the direction-space activations (no radial factor yet).
     totals = [fnp.zeros((mlp.width,), dtype=fnp.float64) for _ in range(mlp.depth)]
     squared_totals = [fnp.zeros((mlp.width,), dtype=fnp.float64) for _ in range(mlp.depth)]
+    # LHS needs the complete design before batching, otherwise its strata
+    # would restart in every batch.  The retained array is bounded at N*d.
+    lhs_directions = (
+        _latin_hypercube_directions(rng, width=int(mlp.width), count=samples)
+        if latin_hypercube
+        else None
+    )
     completed = 0
     while completed < samples:
         count = min(batch_size, samples - completed)
-        if orthogonal_blocks:
+        if lhs_directions is not None:
+            directions = lhs_directions[completed : completed + count]
+        elif orthogonal_blocks:
             directions = _orthogonal_directions(rng, width=int(mlp.width), count=count)
         elif antithetic:
             # ``samples`` is the number of full forward evaluations, including

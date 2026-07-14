@@ -6,10 +6,10 @@ import json
 import time
 from pathlib import Path
 
-import flopscope as flops
 import numpy as np
 from whestbench import MLP, load_dataset
 
+import flopscope as flops
 from whest_solution.sampling import spherical_propagation
 
 

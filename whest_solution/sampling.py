@@ -5,8 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import flopscope.numpy as fnp
-import flopscope as flops
 from whestbench import MLP
+
+import flopscope as flops
 
 from .contracts import estimator_seed
 from .moments import chi_mean

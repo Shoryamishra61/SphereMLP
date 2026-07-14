@@ -10,7 +10,9 @@ from whest_solution.sampling import spherical_propagation
 
 def _mlp(weights: list[np.ndarray], *, seed: int = 17) -> MLP:
     width = weights[0].shape[0]
-    return MLP(width=width, depth=len(weights), weights=[fnp.asarray(w) for w in weights], seed=seed)
+    return MLP(
+        width=width, depth=len(weights), weights=[fnp.asarray(w) for w in weights], seed=seed
+    )
 
 
 def _run(mlp: MLP, **kwargs):
@@ -44,7 +46,9 @@ def test_spherical_seed_determinism_and_batch_invariance() -> None:
     second = _run(mlp, samples=1024, batch_size=128)
     alternate_batch = _run(mlp, samples=1024, batch_size=256)
     np.testing.assert_array_equal(np.asarray(first.predictions), np.asarray(second.predictions))
-    np.testing.assert_allclose(np.asarray(first.predictions), np.asarray(alternate_batch.predictions), atol=1e-6)
+    np.testing.assert_allclose(
+        np.asarray(first.predictions), np.asarray(alternate_batch.predictions), atol=1e-6
+    )
     assert np.all(np.asarray(first.standard_error) >= 0.0)
 
 
@@ -56,13 +60,11 @@ def test_antithetic_has_correct_shape_and_finite_marginals() -> None:
 
 
 def test_orthogonal_blocks_are_deterministic_and_finite() -> None:
-    estimate = _run(
-        _mlp([np.eye(4)]), samples=1024, batch_size=128, orthogonal_blocks=True
+    estimate = _run(_mlp([np.eye(4)]), samples=1024, batch_size=128, orthogonal_blocks=True)
+    repeated = _run(_mlp([np.eye(4)]), samples=1024, batch_size=128, orthogonal_blocks=True)
+    np.testing.assert_array_equal(
+        np.asarray(estimate.predictions), np.asarray(repeated.predictions)
     )
-    repeated = _run(
-        _mlp([np.eye(4)]), samples=1024, batch_size=128, orthogonal_blocks=True
-    )
-    np.testing.assert_array_equal(np.asarray(estimate.predictions), np.asarray(repeated.predictions))
     assert bool(fnp.all(fnp.isfinite(estimate.predictions)))
 
 
@@ -70,7 +72,9 @@ def test_randomized_latin_hypercube_is_deterministic_and_finite() -> None:
     kwargs = dict(samples=1024, batch_size=128, latin_hypercube=True, seed=91)
     estimate = _run(_mlp([np.eye(4)]), **kwargs)
     repeated = _run(_mlp([np.eye(4)]), **kwargs)
-    np.testing.assert_array_equal(np.asarray(estimate.predictions), np.asarray(repeated.predictions))
+    np.testing.assert_array_equal(
+        np.asarray(estimate.predictions), np.asarray(repeated.predictions)
+    )
     assert bool(fnp.all(fnp.isfinite(estimate.predictions)))
     assert bool(fnp.all(estimate.predictions >= 0.0))
 

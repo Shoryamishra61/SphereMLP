@@ -9,10 +9,10 @@ from __future__ import annotations
 
 from math import exp, lgamma, log, pi
 
-import flopscope as flops
 import flopscope.numpy as fnp
 from whestbench import BaseEstimator
 
+import flopscope as flops
 
 _SAMPLES = 6144
 _BATCH = 512

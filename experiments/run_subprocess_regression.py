@@ -24,9 +24,7 @@ def main() -> None:
     parser.add_argument("--setup-timeout", type=float, default=15.0)
     parser.add_argument("--limit", type=int, default=100)
     args = parser.parse_args()
-    dataset = load_dataset(
-        "aicrowd/arc-whestbench-public-2026", revision="v1-phase1", split="mini"
-    )
+    dataset = load_dataset("aicrowd/arc-whestbench-public-2026", revision="v1-phase1", split="mini")
     rows = list(dataset)[: args.limit]
     if len(rows) != args.limit:
         raise ValueError(f"expected {args.limit} Mini rows, found {len(rows)}")

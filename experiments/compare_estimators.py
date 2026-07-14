@@ -28,7 +28,10 @@ def paired_comparison(
 
     def values(field: str) -> np.ndarray:
         return np.array(
-            [float(by_key[(name, candidate)][field]) - float(by_key[(name, parent)][field]) for name in names],
+            [
+                float(by_key[(name, candidate)][field]) - float(by_key[(name, parent)][field])
+                for name in names
+            ],
             dtype=np.float64,
         )
 

@@ -30,10 +30,10 @@ def layerwise_svg(raw_path: Path, output: Path) -> None:
     elements = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="white"/>',
-        f'<path d="M {left} {top} V {height-bottom} H {width-right}" stroke="#222" fill="none"/>',
+        f'<path d="M {left} {top} V {height - bottom} H {width - right}" stroke="#222" fill="none"/>',
         '<text x="20" y="25" font-family="sans-serif" font-size="17">T06 validation: layerwise MSE (log scale)</text>',
-        f'<text x="{width//2}" y="{height-20}" font-family="sans-serif" font-size="13">layer</text>',
-        f'<text x="18" y="{height//2}" font-family="sans-serif" font-size="13" transform="rotate(-90 18 {height//2})">mean squared error</text>',
+        f'<text x="{width // 2}" y="{height - 20}" font-family="sans-serif" font-size="13">layer</text>',
+        f'<text x="18" y="{height // 2}" font-family="sans-serif" font-size="13" transform="rotate(-90 18 {height // 2})">mean squared error</text>',
     ]
     layers = len(next(iter(series.values())))
     for index, (name, values) in enumerate(series.items()):
@@ -43,13 +43,19 @@ def layerwise_svg(raw_path: Path, output: Path) -> None:
             y = top + plot_h * (1.0 - (np.log10(max(value, 1e-15)) - lo) / max(hi - lo, 1e-12))
             points.append(f"{x:.1f},{y:.1f}")
         color = colors[index % len(colors)]
-        elements.append(f'<polyline points="{" ".join(points)}" fill="none" stroke="{color}" stroke-width="2"/>')
-        elements.append(f'<text x="{left + 10}" y="{top + 24 + 19*index}" font-family="sans-serif" font-size="13" fill="{color}">{name}</text>')
+        elements.append(
+            f'<polyline points="{" ".join(points)}" fill="none" stroke="{color}" stroke-width="2"/>'
+        )
+        elements.append(
+            f'<text x="{left + 10}" y="{top + 24 + 19 * index}" font-family="sans-serif" font-size="13" fill="{color}">{name}</text>'
+        )
     for fraction in (0.0, 0.5, 1.0):
         exponent = hi - fraction * (hi - lo)
         y = top + fraction * plot_h
-        elements.append(f'<path d="M {left-4} {y:.1f} H {width-right}" stroke="#ddd"/>')
-        elements.append(f'<text x="{left-66}" y="{y+4:.1f}" font-family="monospace" font-size="11">1e{exponent:.1f}</text>')
+        elements.append(f'<path d="M {left - 4} {y:.1f} H {width - right}" stroke="#ddd"/>')
+        elements.append(
+            f'<text x="{left - 66}" y="{y + 4:.1f}" font-family="monospace" font-size="11">1e{exponent:.1f}</text>'
+        )
     elements.append("</svg>")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("\n".join(elements), encoding="utf-8")

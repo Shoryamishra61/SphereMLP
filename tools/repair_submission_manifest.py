@@ -20,7 +20,9 @@ from pathlib import Path
 def repair(source: Path, output: Path) -> dict[str, object]:
     with tarfile.open(source, "r:gz") as archive:
         members = archive.getmembers()
-        manifest_member = next((member for member in members if member.name == "manifest.json"), None)
+        manifest_member = next(
+            (member for member in members if member.name == "manifest.json"), None
+        )
         if manifest_member is None:
             raise ValueError("source archive has no manifest.json")
         raw_manifest = archive.extractfile(manifest_member)

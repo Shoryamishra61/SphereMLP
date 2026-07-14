@@ -8,11 +8,10 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 import numpy as np
-import flopscope as flops
 from whestbench import MLP, load_dataset
 
+import flopscope as flops
 from whest_solution.sampling import spherical_propagation
-
 
 PROFILES = (
     ("iid_4096", 4096, False, False),

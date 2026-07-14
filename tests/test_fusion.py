@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+import flopscope.numpy as fnp
 import numpy as np
 import pytest
 
-import flopscope.numpy as fnp
 from whest_solution.fusion import convex_fuse, layerwise_convex_fuse
 
 
